@@ -1,15 +1,18 @@
 import re
 
 
-def get_user_id(session, name_or_id):
-    if isinstance(name_or_id, int):
-        return name_or_id
-    resp = session.method("utils.resolveScreenName", values={"screen_name": name_or_id})
-    return resp["object_id"]
-
-
-def get_vk_id_from_link(link: str):
-    if re.search("vk.com/id", link) is None:
-        return link.split("vk.com/")[-1]
+def get_user_id(session, link):
+    root_url = "vk.com"
+    root_url_with_id = root_url + "/id"
+    if re.search(root_url_with_id, link):
+        user_id = link.split(root_url_with_id)[-1]
+        return int(user_id)
     else:
-        return int(link.split("vk.com/id")[-1])
+        user_shortname = link.split(root_url)[-1]
+        return get_user_id_from_shortname(session, user_shortname)
+
+
+def get_user_id_from_shortname(session, shortname):
+    resp = session.method("utils.resolveScreenName", values={"screen_name": shortname})
+    user_id = resp["object_id"]
+    return user_id
