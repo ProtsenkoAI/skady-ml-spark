@@ -13,7 +13,7 @@ def get_user_id(session, link):
         try:
             return get_user_id_from_shortname(session, user_shortname)
         except VkRequestException:
-            raturn None
+            return None
 
 
 def get_user_id_from_shortname(session, shortname):
