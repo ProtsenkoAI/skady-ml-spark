@@ -1,5 +1,5 @@
 import re
-from .exceptions import VkRequestException
+
 
 
 def get_user_id(session, link):
@@ -10,10 +10,7 @@ def get_user_id(session, link):
         return int(user_id)
     else:
         user_shortname = link.split(root_url)[-1][1:]
-        try:
-            return get_user_id_from_shortname(session, user_shortname)
-        except VkRequestException:
-            return None
+        return get_user_id_from_shortname(session, user_shortname)
 
 
 def get_user_id_from_shortname(session, shortname):
