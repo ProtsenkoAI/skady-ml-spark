@@ -1,22 +1,26 @@
 from fastapi import FastAPI
 
-from models import db, MatrixElement
+from models import db, MatrixElement, RequestBodyUserMatrix, RequestBodyUserVkGroups
+from service.data_managers.groups_manager import GroupsDataManager
 
 app = FastAPI()
+groups_data_manager = GroupsDataManager()
 
 
-@app.get('/matrix')
-async def list_matrix():
+@app.get('/get_user_groups')
+async def groups_list(req_body: RequestBodyUserVkGroups):
+    return await groups_data_manager.get_users_groups(req_body.userId)
+
+
+@app.get('/get_match_list')
+async def get_match_list(req_body: RequestBodyUserMatrix):
     matrix = []
-    for element in db.matrix.find():
+    for element in list(db.matrix.find({"firstUser": req_body.userId, "trackId": req_body.trackId})):
         matrix.append(MatrixElement(**element))
     return {'matrix': matrix}
 
 
-@app.post('/matrix')
-async def create_matrix(matrix_element: MatrixElement):
-    if hasattr(matrix_element, 'id'):
-        delattr(matrix_element, 'id')
-    ret = db.matrix.insert_one(matrix_element.dict(by_alias=True))
-    matrix_element.id = ret.inserted_id
-    return {'matrix': matrix_element}
+@app.post('/add_new_user')
+async def create_matrix(req_body: RequestBodyUserMatrix):
+    matrix = await groups_data_manager.add(req_body.userId, req_body.trackId)
+    return matrix

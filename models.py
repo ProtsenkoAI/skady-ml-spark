@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
 from pymongo import MongoClient
 from bson import ObjectId
-from typing import Optional
 
 client = MongoClient()
 db = client["db"]
@@ -25,7 +24,6 @@ class PyObjectId(ObjectId):
 
 
 class MatrixElement(BaseModel):
-    id: Optional[PyObjectId] = Field(alias='_id')
     firstUser: str
     secondUser: str
     valueMatch: float
@@ -36,3 +34,14 @@ class MatrixElement(BaseModel):
         json_encoders = {
             ObjectId: str
         }
+
+
+class RequestBodyUserMatrix(BaseModel):
+    userId: str
+    trackId: str
+
+
+class RequestBodyUserVkGroups(BaseModel):
+    userId: str
+
+
