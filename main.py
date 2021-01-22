@@ -11,13 +11,11 @@ groups_data_manager = GroupsDataManager()
 async def groups_list(req_body: RequestBodyUserVkGroups):
     return await groups_data_manager.get_users_groups(req_body.userId)
 
-
+ 
 @app.get('/get_match_list')
 async def get_match_list(req_body: RequestBodyUserMatrix):
-    matrix = []
-    for element in list(db.matrix.find({"firstUser": req_body.userId, "trackId": req_body.trackId})):
-        matrix.append(MatrixElement(**element))
-    return {'matrix': matrix}
+    matrix = await groups_data_manager.get_match_values(req_body.userId, req_body.trackId)
+    return {'userMatches': matrix}
 
 
 @app.post('/add_new_user')

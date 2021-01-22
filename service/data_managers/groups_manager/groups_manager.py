@@ -29,6 +29,19 @@ class GroupsDataManager:
                 })
                 db.matrix.insert_one(matrix_element.dict())
 
+
+    async def get_match_values(self, user_id, track_id):
+        """
+        Returns user matches
+        :param user_id:
+        :param track_id:
+        :return:
+        """
+        matrix = []
+        for element in list(db.matrix.find({"firstUser": user_id, "trackId": track_id}).sort([('valueMatch', -1)])):
+            matrix.append(MatrixElement(**element))
+        return matrix
+
     async def get_users_groups(self, user_id):
         """
         Returns groups by user_id
