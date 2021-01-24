@@ -13,22 +13,27 @@ class GroupsDataManager:
         :param user_id: int, system user_id as it's stored at main backend
         :param track_id: str, track id
         """
+
         match_estimator = MatchEstimator()
+        matrix = []
+        try:
+            user = db.users.find_one({"_id": ObjectId(user_id)})
+            users = list(db.users.find())
 
-        user = db.users.find_one({"_id": ObjectId(user_id)})
-        users = list(db.users.find())
-
-        for index in range(len(users)):
-            if users[index]["_id"] != user["_id"]:
-                match_value = match_estimator.get_match_val(user["vkGroups"], users[index]["vkGroups"])
-                matrix_element = MatrixElement(**{
-                    "firstUser": str(user["_id"]),
-                    "secondUser": str(users[index]["_id"]),
-                    "valueMatch": match_value if match_value else 0.0,
-                    "trackId": track_id
-                })
-                db.matrix.insert_one(matrix_element.dict())
-
+            for index in range(len(users)):
+                if users[index]["_id"] != user["_id"]:
+                    match_value = match_estimator.get_match_val(user["vkGroups"], users[index]["vkGroups"])
+                    matrix_element = MatrixElement(**{
+                        "firstUser": str(user["_id"]),
+                        "secondUser": str(users[index]["_id"]),
+                        "valueMatch": match_value if match_value else 0.0,
+                        "trackId": track_id
+                    })
+                    matrix.append(matrix_element)
+                    db.matrix.insert_one(matrix_element.dict())
+            return {"status": "success"}
+        except:
+            return {"status": "error"}
 
     async def get_match_values(self, user_id, track_id):
         """

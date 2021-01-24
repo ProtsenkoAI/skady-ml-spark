@@ -20,5 +20,5 @@ async def get_match_list(req_body: RequestBodyUserMatrix):
 
 @app.post('/add_new_user')
 async def create_matrix(req_body: RequestBodyUserMatrix):
-    matrix = await groups_data_manager.add(req_body.userId, req_body.trackId)
-    return matrix
+    print("-----------------")
+    return await groups_data_manager.add(req_body.userId, req_body.trackId)
