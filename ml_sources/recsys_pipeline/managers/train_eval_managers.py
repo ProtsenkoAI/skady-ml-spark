@@ -2,17 +2,16 @@ import numpy as np
 
 
 class TrainEvalManager:
-    def __init__(self, trainer, validator, max_steps=None, max_epochs=None, 
-                 eval_strategy="steps", nsteps=None, stopping_patience=None,
-                 save_best_model=False, model_saver=None):
+    def __init__(self, trainer, validator, eval_strategy="steps",
+                 max_steps=None, max_epochs=None, nsteps=None,
+                 stopping_patience=None, save_best_model=False, model_saver=None):
         """
-        :param eval_strategy: str, one of (steps", "epoch", "patience")
+        :param eval_strategy: str, one of (steps", "epoch")
         """
         self.trainer = trainer
         self.dataset_len = self.trainer.get_dataset_len()
         self.validator = validator
-        self.max_steps = max_steps
-        self.max_epochs = max_epochs
+        self.max_steps = self._get_max_steps(max_steps, max_epochs, trainer)
         self.steps_passed = 0
         self.stopping_patience = stopping_patience
         self.eval_strategy = eval_strategy
@@ -21,8 +20,9 @@ class TrainEvalManager:
         self.model_saver = model_saver
         self._validate_inp_args()
 
-    def train_eval(self):
         self.eval_results = []
+
+    def train_eval(self):
         while self._decide_train_continue():
             train_kwargs = self._get_train_kwargs_update_train_counters()
             self.trainer.fit(**train_kwargs)
@@ -38,6 +38,19 @@ class TrainEvalManager:
             return self.eval_results, best_model
 
         return self.eval_results
+
+    def _get_max_steps(self, max_steps, max_epochs, trainer=None):
+        """Returns least number from two: max_steps and number of steps in max_epochs.
+        If some value is None it not taken into account."""
+        if max_steps is None and max_epochs is None:
+            return None
+        if not max_epochs is None:
+            max_steps_because_of_epochs = max_epochs * trainer.get_dataset_len()
+            if not max_steps is None:
+                max_steps = min(max_steps, max_steps_because_of_epochs)
+            else:
+                max_steps = max_steps_because_of_epochs
+        return max_steps
 
     def _get_train_kwargs_update_train_counters(self):
         """
@@ -56,20 +69,11 @@ class TrainEvalManager:
         return train_kwargs
 
     def _get_nsteps_adjusted_to_max_values(self):
-        if self.max_steps is None and self.max_epochs is None:
+        if self.max_steps is None:
             return self.nsteps
 
-        elif self.max_steps is None:
-            max_epochs_steps = self.max_epochs * self.dataset_len
-            nearest_maximum = max_epochs_steps
-        elif self.max_epochs is None:
-            nearest_maximum = self.max_steps
-        else:
-            max_epochs_steps = self.max_epochs * self.dataset_len
-            max_steps_steps = self.max_steps
-            nearest_maximum = min(max_epochs_steps, max_steps_steps)
-        steps_left = nearest_maximum - self.steps_passed
-        steps = min(self.nsteps, steps_left)
+        steps_left_to_max = self.max_steps - self.steps_passed
+        steps = min(self.nsteps, steps_left_to_max)
         return steps
 
     def _update_train_counters(self):
@@ -98,13 +102,10 @@ class TrainEvalManager:
 
     def _decide_train_continue(self):
         if not self.max_steps is None:
-            if self.max_steps <= self.trainer.get_steps_passed():
-                return False
-        if not self.max_epochs is None:
-            if self.max_epochs <= self.trainer.get_epochs_passed():
+            if self.max_steps <= self.steps_passed:
                 return False
 
-        if not self.stopping_patience is None and len(self.eval_results): # refactor
+        if not self.stopping_patience is None and len(self.eval_results):
             steps_passed = len(self.eval_results)
             best_result_step = np.argmax(self.eval_results)
             if (steps_passed - best_result_step - 1) >= self.stopping_patience:

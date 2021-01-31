@@ -17,28 +17,33 @@ class Validator:
 
     def evaluate(self):
         eval_vals = []
-        for user, user_data in self.users_datasets_retriever: # iterating on batches
-            user_eval_val = self._eval_user(user, user_data)
+        for user_data in self.users_datasets_retriever: # iterating on batches
+            user_eval_val = self._eval_user(user_data)
             eval_vals.append(user_eval_val)
         
         mean_metrics = pd.concat(eval_vals).mean()
         return self._get_main_metric_from_score(mean_metrics)
 
-    def _eval_user(self, user, user_data) -> pd.DataFrame:
-        user = self.preprocessor.preprocess_users(user)
-        items_data = self.preprocessor.preprocess_items(self.all_item_ids)
+    def _eval_user(self, user_data) -> pd.DataFrame:
+        batches_preds = []
+        items_of_user = []
+        labels = []
 
-        all_items_preds = self.model(user, items_data).squeeze().detach().numpy()
+        for batch in user_data:
+            (users_data, items_data), batch_labels = self.preprocessor.preprocess_batch(batch)
+            batch_preds = self.model(users_data, items_data).squeeze().detach().numpy()
+            batches_preds.append(batch_preds)
+            items_of_user += list(items_data)
+            labels += list(batch_labels)
+
+        all_items_preds = np.concatenate(batches_preds)
 
         items_preds_series = pd.Series(all_items_preds, index=self.all_item_ids)
-        true_labels = self._label_all_items_from_interacts(user_data)
+        true_labels = self._get_all_item_labels(items_of_user, labels)
         score = self._score_preds(items_preds_series, true_labels)
         return score
 
-    def _label_all_items_from_interacts(self, interacts):
-        labels = interacts[self.labels_colname]
-        items = interacts[self.items_colname]
-
+    def _get_all_item_labels(self, items, labels):
         nitems = len(self.all_item_ids)
         item_labels = np.zeros(nitems)
         item_labels[items] = labels

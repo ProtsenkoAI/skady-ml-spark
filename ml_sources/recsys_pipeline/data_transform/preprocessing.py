@@ -2,12 +2,12 @@ import torch
 from collections.abc import Iterable
 from .preproc_helpers import wrap_in_list_if_number
 
+
 class DataPreprocessor:
     def __init__(self, device):
         self.device = device
 
     def preprocess_batch(self, batch):
-        # (users, items), labels = self._split_batch(batch)
         features, labels = batch
         users, items = self._split_users_items(features)
 
@@ -33,18 +33,23 @@ class DataPreprocessor:
 
     @wrap_in_list_if_number
     def preprocess_labels(self, labels):
-        return torch.tensor(labels).to(self.device).float()
+        # if isinstance(labels, torch.Tensor):
+        #     if not isinstance(labels.dtype, float):
+        #         labels = labels.float()
+        # else:
+        #     labels = torch.tensor(labels).to(self.device).float()
+        # return labels
+
+        # return torch.tensor(labels).to(self.device).float()
+        if not isinstance(labels, torch.Tensor):
+            labels = torch.tensor(labels)
+        return labels.to(self.device).float()
 
     def _preproc_index_features(self, index_features):
-        return torch.tensor(index_features, dtype=torch.long, device=self.device)
-
-    def _split_batch(self, batch):
-        print("batch in _split_batch", batch)
-        print("*batch", *batch)
-        print(len(batch))
-        features, labels = zip(*batch)
-        features_proc = self._split_users_items(features)
-        return features_proc, labels
+        if not isinstance(index_features, torch.Tensor):
+            index_features = torch.tensor(index_features)
+        index_features = index_features.to(self.device).long()
+        return index_features
 
     def _split_users_items(self, batch_or_pair):
         if isinstance(batch_or_pair[0], Iterable):

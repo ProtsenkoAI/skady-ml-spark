@@ -1,3 +1,6 @@
 data/
 .idea/
 **/__pycache__
+**/.ipynb_checkpoints
+**/*.pyc
+tmp_results/

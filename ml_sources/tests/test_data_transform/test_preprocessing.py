@@ -1,28 +1,24 @@
 import unittest
-import pandas as pd
+import numpy as np
 import torch
 
-from recsys_pipeline.data_transform import data_preprocessor
+from recsys_pipeline.data_transform import preprocessing
 from ..helpers import tests_config
 config = tests_config.TestsConfig()
 
 
 class TestDataPreprocessor(unittest.TestCase):
-    """The main point is: whatever data are, ouptuts must be tensors"""
+    """The main point is: whatever data are, outputs must be tensors"""
     def setUp(self):
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')   
         self.batchsize = 8
-        self.preprocessor = data_preprocessor.DataPreprocessor(self.device)
+        self.preprocessor = preprocessing.DataPreprocessor(config.device)
 
-        self.users = [0 for _ in range(self.batchsize)]
-        self.items = [1 for _ in range(self.batchsize)]
-        self.labels = [2 for _ in range(self.batchsize)]
-        x = [0, 1]
-        y = 2
-
-        self.batch_x = [x for _ in range(self.batchsize)]
-        self.batch_y = [y for _ in range(self.batchsize)]
-        self.batch = [self.batch_x, self.batch_y]
+        # creating standard input data
+        self.users = np.full(self.batchsize, 0)
+        self.items = np.full(self.batchsize, 1)
+        self.labels = np.full(self.batchsize, 2)
+        self.features = np.concatenate([self.users.reshape(-1, 1), self.items.reshape(-1, 1)], axis=1)
+        self.batch = [self.features, self.labels]
 
     def test_transform_batch_types(self):
         out = self.preprocessor.preprocess_batch(self.batch)
@@ -63,14 +59,14 @@ class TestDataPreprocessor(unittest.TestCase):
     def test_transform_user(self):
         proc_user = self.preprocessor.preprocess_users(self.users[0])
         self.assertIsInstance(proc_user, torch.Tensor)
-        self.assertEqual(proc_user.ndim, 1)
+        self.assertEqual(proc_user.ndim, 0)
 
     def test_transform_item(self):
         proc_item = self.preprocessor.preprocess_items(self.items[0])
         self.assertIsInstance(proc_item, torch.Tensor)
-        self.assertEqual(proc_item.ndim, 1)
+        self.assertEqual(proc_item.ndim, 0)
 
     def test_transform_x(self):
-        proc_users, proc_items = self.preprocessor.preprocess_x(self.batch_x)
+        proc_users, proc_items = self.preprocessor.preprocess_x(self.features)
         self.assertIsInstance(proc_users, torch.Tensor)
         self.assertIsInstance(proc_items, torch.Tensor)

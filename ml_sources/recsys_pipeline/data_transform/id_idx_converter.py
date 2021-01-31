@@ -1,3 +1,6 @@
+import collections
+
+
 class IdIdxConverter:
     """Service class for model manager. It's needed because model needs indexes
     of users and items, but server feeds user ids those don't go in order"""
@@ -8,7 +11,9 @@ class IdIdxConverter:
         self.add_ids(*ids)
 
     def get_all_ids(self):
-        return list(self.id2idx.keys())
+        ordered_idx2id = collections.OrderedDict(self.idx2id)
+        ids_sorted_by_idx = list(ordered_idx2id.values())
+        return ids_sorted_by_idx
 
     def get_all_idxs(self):
         return list(self.idx2id.keys())

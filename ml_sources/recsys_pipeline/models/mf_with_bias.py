@@ -22,7 +22,7 @@ class MFWithBiasModel(nn.Module):
 
     def save_model(self, saver):
         model_kwargs = {"nusers": self.nusers, "nitems": self.nitems, "hidden_size": self.hidden_size}
-        model_name = f"mf_with_bias_{nusers}_{nitems}_{hidden_size}"
+        model_name = f"mf_with_bias_{self.nusers}_{self.nitems}_{self.hidden_size}"
         saver.save(model_name, self.state_dict(), model_kwargs)
 
     def add_users(self, nusers):
@@ -47,10 +47,15 @@ class MFWithBiasModel(nn.Module):
         return nn.init.normal_(tensor)
 
     def forward(self, user, item):
+        # print("input", user, item)
+        # try:
+        #     print("shapes", user.shape, item.shape)
         bias_sum = self.user_biases(user) + self.item_biases(item)
+        # except Exception as e:
+        #     print("exception!")
+        #     raise e
         user_emb = self.user_factors(user)
         item_emb = self.item_factors(item)
 
         product_with_bias = user_emb * item_emb + bias_sum
         return product_with_bias.sum(dim=1, keepdim=True)
-        

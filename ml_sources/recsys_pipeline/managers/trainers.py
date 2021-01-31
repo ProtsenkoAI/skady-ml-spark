@@ -1,8 +1,10 @@
 from torch import optim
+from copy import copy
 from sklearn import metrics
 from torch import nn
 import numpy as np
-    
+
+
 class Trainer:
     def __init__(self, model, dataset, preprocessor, lr=1e-4,
                  save_path="./model_weights.pt"):
@@ -10,6 +12,7 @@ class Trainer:
         self.preprocessor = preprocessor
 
         self.dataset = dataset
+        self._reset_dataset_iter()
         self.lr = lr
         self.save_path = save_path
         self.steps_left = None
@@ -35,6 +38,7 @@ class Trainer:
         self._init_train_parts()
     
     def get_recommends_for_users(self, users, item_ids):
+        # TODO: separate into some ModelManager
         preds_by_user = []
         for user in users:
             pred = self.model(user, item_ids).squeeze().detach().numpy()
@@ -62,8 +66,7 @@ class Trainer:
         both_none = nsteps is None and nepochs is None
         both_not_none = not nsteps is None and not nepochs is None
         if both_none or both_not_none:
-            raise ValueError("Should specify steps or epochs, but entered params "
-                             f"nsteps: {nsteps}, nepochs: {nepochs}")
+            raise ValueError("Should specify steps or epochs, but entered params nsteps: {nsteps}, nepochs: {nepochs}")
 
     def _train_one_step(self):
         batch = self._get_next_batch()
@@ -86,11 +89,10 @@ class Trainer:
     def _get_next_batch(self):
         try:
             next_batch = next(self.dataset_iter)
-        except (StopIteration, AttributeError): # dataset ended or hadn't been initializaed
+        except (StopIteration, AttributeError) as e: # dataset ended or hadn't been initialized
             self._reset_dataset_iter()
             next_batch = next(self.dataset_iter)
         return next_batch
 
     def _reset_dataset_iter(self):
         self.dataset_iter = iter(self.dataset)
-    

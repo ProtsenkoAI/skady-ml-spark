@@ -1,11 +1,10 @@
-# TODO
 import unittest
 import pandas as pd
 import torch
 
 from recsys_pipeline.models import mf_with_bias
-from recsys_pipeline.data_transform import data_preprocessor
-from ..helpers import tests_config
+from recsys_pipeline.data_transform import preprocessing
+from ..helpers import tests_config, objects_creation
 config = tests_config.TestsConfig()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -16,7 +15,7 @@ class TestMFWithBias(unittest.TestCase):
         self.standard_nitems = 5000
         self.standard_hidden_size = 50
         
-        self.preprocessor = data_preprocessor.DataPreprocessor(device)
+        self.preprocessor = preprocessing.DataPreprocessor(device)
         user_and_item = (343, 123)
         self.standard_single_inp = self.preprocessor.preprocess_x(user_and_item)
 
@@ -93,6 +92,7 @@ class TestMFWithBias(unittest.TestCase):
         pred = model(*input_with_new_items)
 
     def _create_standard_model(self):
-        return mf_with_bias.MFWithBiasModel(self.standard_nusers, 
-                                            self.standard_nitems,
-                                            self.standard_hidden_size)
+        model = objects_creation.get_mf_model(self.standard_nusers,
+                                              self.standard_nitems,
+                                              hidden_size=self.standard_hidden_size)
+        return model

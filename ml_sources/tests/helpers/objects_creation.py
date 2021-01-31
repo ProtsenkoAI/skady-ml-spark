@@ -1,18 +1,28 @@
 import torch
+from torch.utils import data as torch_data
 import pandas as pd
 
-from recsys_pipeline.data import *
-from recsys_pipeline.data_transform import *
-from recsys_pipeline.managers import *
+from recsys_pipeline.data import datasets, loader_build, datasets_retrievers
+from recsys_pipeline.data_transform import preprocessing, id_idx_converter
+from recsys_pipeline.managers import trainers, validators, train_eval_managers
 from recsys_pipeline.models import mf_with_bias
-from recsys_pipeline.saving import *
+from recsys_pipeline.saving import meta_model_saving, model_state_dict_saving
 from . import tests_config
-
-DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+config = tests_config.TestsConfig()
 
 
 def get_interacts(nrows=20):
-    return pd.read_csv(config.interacts_path, nrows=nrows)
+    interacts = pd.read_csv(config.interacts_path, nrows=nrows)
+
+    users = interacts[config.user_colname]
+    items = interacts[config.item_colname]
+    user_id_idx_conv = get_id_converter()
+    item_id_idx_conv = get_id_converter()
+    interacts[config.user_colname] = user_id_idx_conv.add_ids_get_idxs(*users)
+    interacts[config.item_colname] = item_id_idx_conv.add_ids_get_idxs(*items)
+
+    return interacts
+
 
 def get_all_item_ids(nrows=20):
     interacts = get_interacts(nrows)
@@ -28,16 +38,30 @@ def get_interact_dataset(nrows=20):
 
 def get_loader(nrows=20, batch_size=8):
     dataset = get_interact_dataset(nrows)
-    dataloader = torch_data.DataLoader(dataset, batch_size=batch_size)
+    dataloader = create_loader_from_dataset(dataset, batch_size)
     return dataloader
 
 
-def get_mf_model(nusers=20, nitems=20):
-    return mf_with_bias.MFWithBiasModel(nusers, nitems)
+def get_datasets_retriever(interacts, batch_size=8):
+    loader_builder = loader_build.StandardLoaderBuilder(batch_size=batch_size)
+    retriever = datasets_retrievers.UsersDatasetsRetriever(interacts, loader_builder)
+    return retriever
+
+
+def create_dataset_from_interacts(interacts):
+    return datasets.InteractDataset(interacts)
+
+
+def create_loader_from_dataset(dataset, batch_size=8):
+    return torch_data.DataLoader(dataset, batch_size=batch_size)
+
+
+def get_mf_model(nusers=20, nitems=20, **kwargs):
+    return mf_with_bias.MFWithBiasModel(nusers, nitems, **kwargs)
 
 
 def get_preprocessor():
-    return data_preprocessor.DataPreprocessor(DEVICE)
+    return preprocessing.DataPreprocessor(config.device)
 
 
 def get_id_converter(*ids):
@@ -52,11 +76,12 @@ def get_trainer(model, interacts_nrows=20, batch_size=8):
 
 
 def get_validator(model, interact_nrows=20, batch_size=8):
-    dataloader = get_loader(interact_nrows, batch_size)
+    interacts = get_interacts(interact_nrows)
+    retriever = get_datasets_retriever(interacts, batch_size)
     all_item_ids = get_all_item_ids(interact_nrows)
     preprocessor = get_preprocessor()
 
-    validator = validators.Validator(model, dataset, all_item_ids, 
+    validator = validators.Validator(model, retriever, all_item_ids,
                                      preprocessor)
     return validator
 
