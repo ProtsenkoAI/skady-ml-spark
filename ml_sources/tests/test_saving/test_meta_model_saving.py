@@ -1,5 +1,4 @@
 # TODO
-import unittest
 import torch
 # import shutil
 import os
@@ -7,10 +6,11 @@ import os
 from recsys_pipeline.models import mf_with_bias
 from recsys_pipeline.saving import meta_model_saving
 from ..helpers import tests_config, objects_creation
+from . import base_class
 config = tests_config.TestsConfig()
 
 
-class TestMetaModelSaver(unittest.TestCase):
+class TestMetaModelSaving(base_class.TestSaving):
     def setUp(self):
         self.save_dir = config.save_dir
         self.standard_users = [123, 234]
@@ -70,14 +70,6 @@ class TestMetaModelSaver(unittest.TestCase):
 
         self._delete_params_file(saver)
 
-    def _assert_parameters_equal(self, model1, model2):
-        for (old_param, new_param) in zip(model1.parameters(), model2.parameters()):
-            old_param = old_param.detach().numpy()
-            new_param = new_param.detach().numpy()
-            if old_param.shape == new_param.shape:
-                params_equal = (old_param == new_param).all()
-                self.assertTrue(params_equal)
-
     def _save_load_standard_model(self, saver, model_name, nusers=50, nitems=50, hidden_size=20):
         model_kwargs = {"nusers": nusers, "nitems": nitems, "hidden_size": hidden_size}
         model = mf_with_bias.MFWithBiasModel(**model_kwargs)
@@ -89,8 +81,3 @@ class TestMetaModelSaver(unittest.TestCase):
     def _delete_params_file(self, saver):
         params_path = saver.params_path
         os.remove(params_path)
-
-
-    # def tearDown(self, dir_path):
-    #     # clean files
-    #     shutil.rmtree(self.save_dir)

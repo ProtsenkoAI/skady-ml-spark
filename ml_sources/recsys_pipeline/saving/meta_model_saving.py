@@ -8,6 +8,7 @@ class MetaModelSaver:
     def __init__(self, save_dir="./", params_file_name="models_parameters.json",
                  model_file_postfix="_weights", model_creator=mf_with_bias.MFWithBiasModel):
         self.save_dir = save_dir
+        os.makedirs(self.save_dir, exist_ok=True) # create dir if needed
         self.params_path = os.path.join(save_dir, params_file_name)
         self.model_file_postfix = model_file_postfix
         self.model_creator = model_creator
@@ -35,14 +36,12 @@ class MetaModelSaver:
         model_params = meta[model_name]
         user_ids = model_params.pop("user_ids")
         item_ids = model_params.pop("item_ids")
-
         model = self.model_creator(**model_params)
         model_weights = torch.load(weights_path)
         model.load_state_dict(model_weights)
         return model, (user_ids, item_ids)
 
     def _load_meta(self):
-        os.makedirs(self.save_dir, exist_ok=True) # create dir if needed
         if os.path.isfile(self.params_path):
             with open(self.params_path) as f:
                 meta = json.load(f)

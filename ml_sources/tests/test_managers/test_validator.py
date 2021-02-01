@@ -28,6 +28,7 @@ class TestValidator(unittest.TestCase):
         self.assertIsInstance(metric_val, float)
 
     def test_one_user_evaluation(self):
+        # maybe we shouldn't calculate metric for one user ?
         some_user = self.interacts[config.user_colname].unique()[0]
         user_interacts = self.interacts[self.interacts[config.user_colname] == some_user]
         all_item_ids = user_interacts["anime_id"].unique()
@@ -39,4 +40,3 @@ class TestValidator(unittest.TestCase):
 
         score = validator._eval_user(dataset)
         self.assertIsInstance(score, pd.DataFrame)
-        self.assertEqual(len(score), len(all_item_ids), "Number of scores and items doesn't match")
