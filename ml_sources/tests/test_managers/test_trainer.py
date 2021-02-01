@@ -78,11 +78,9 @@ class TestTrainer(unittest.TestCase):
 
         proc_users = self.preprocessor.preprocess_users(users)
         proc_items = self.preprocessor.preprocess_items(items)
-        print("PROC one-to-many", proc_users, proc_items)
         print(proc_users.shape, proc_items.shape)
 
         recommends = trainer.get_recommends_for_users(proc_users, proc_items)
-        print("recommends in trainer", recommends)
         self.assertEqual(len(recommends), len(proc_users))
         self.assertGreater(len(recommends[0]), 0)
 

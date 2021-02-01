@@ -70,6 +70,26 @@ class TestMetaModelSaving(base_class.TestSaving):
 
         self._delete_params_file(saver)
 
+    def test_that_loaded_ids_are_in_same_order_as_saved(self):
+        src_user_ids = self.standard_users
+        src_item_ids = self.standard_items
+        src_user_indexes = self.user_conv.get_idxs(*src_user_ids)
+        src_item_indexes = self.item_conv.get_idxs(*src_item_ids)
+
+        saver = meta_model_saving.MetaModelSaver(save_dir=self.save_dir, params_file_name="params_for_ids_saving_check.json")
+        _, _, (loaded_user_ids, loaded_item_ids) = self._save_load_standard_model(saver, "idk_some_model")
+
+        loaded_user_indexes = self.user_conv.get_idxs(*loaded_user_ids)
+        loaded_item_indexes = self.item_conv.get_idxs(*loaded_item_ids)
+
+        pairs_must_be_equal = [(src_user_ids, loaded_user_ids),
+                               (src_item_ids, loaded_item_ids),
+                               (src_user_indexes, loaded_user_indexes),
+                               (src_item_indexes, loaded_item_indexes)]
+
+        for src, loaded in pairs_must_be_equal:
+            self.assertEqual(src, loaded, "Some ids/idxs were changed while saving/loading.")
+
     def _save_load_standard_model(self, saver, model_name, nusers=50, nitems=50, hidden_size=20):
         model_kwargs = {"nusers": nusers, "nitems": nitems, "hidden_size": hidden_size}
         model = mf_with_bias.MFWithBiasModel(**model_kwargs)

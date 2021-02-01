@@ -91,8 +91,37 @@ class TestMFWithBias(unittest.TestCase):
         model.add_items(len(new_item_ids))
         pred = model(*input_with_new_items)
 
+    def test_get_init_kwargs(self):
+        model = self._create_standard_model()
+        init_kwargs = model.get_init_kwargs()
+        init_kwargs_structure_is_ok = "nusers" in init_kwargs and "nitems" in init_kwargs and "hidden_size" in init_kwargs
+        self.assertTrue(init_kwargs_structure_is_ok)
+
+    def test_adding_users_updated_init_kwargs(self):
+        model = self._create_standard_model()
+        old_nusers = model.get_init_kwargs()["nusers"]
+        model.add_users(nusers=2)
+        new_nusers = model.get_init_kwargs()["nusers"]
+        self.assertEqual(old_nusers + 2, new_nusers)
+
+    def test_saved_model_with_added_users_loads_with_correct_nusers(self):
+        model = self._create_standard_model()
+        old_nusers = model.get_init_kwargs()["nusers"]
+        model.add_users(nusers=2)
+        model_init_kwargs_before_saving = model.get_init_kwargs()
+        new_nusers_before_saving = model_init_kwargs_before_saving["nusers"]
+        self.assertEqual(old_nusers + 2, new_nusers_before_saving)
+
+        saver = objects_creation.get_simple_saver(save_dir=config.save_dir)
+        saver.save(model.state_dict())
+
+        new_model = objects_creation.get_mf_model(**model_init_kwargs_before_saving)
+        saved_state = saver.load()
+        new_model.load_state_dict(saved_state)
+
     def _create_standard_model(self):
         model = objects_creation.get_mf_model(self.standard_nusers,
                                               self.standard_nitems,
                                               hidden_size=self.standard_hidden_size)
         return model
+

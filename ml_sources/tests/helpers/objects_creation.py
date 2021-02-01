@@ -12,7 +12,9 @@ config = tests_config.TestsConfig()
 
 
 def get_interacts(nrows=20):
-    interacts = pd.read_csv(config.interacts_path, nrows=nrows)
+    interacts = pd.read_csv(config.interacts_path, nrows=nrows*100)
+    interacts = interacts[interacts["rating"] != -1] # clean up interacts without rating
+    interacts = interacts.iloc[:nrows].reset_index(drop=True)
 
     users = interacts[config.user_colname]
     items = interacts[config.item_colname]

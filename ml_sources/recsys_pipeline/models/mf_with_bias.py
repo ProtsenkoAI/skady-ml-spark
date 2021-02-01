@@ -2,6 +2,7 @@ from torch import nn
 import torch
 from torch.nn import parameter
 
+
 class MFWithBiasModel(nn.Module):
     def __init__(self, nusers, nitems, hidden_size=20):
         super().__init__()
@@ -20,10 +21,8 @@ class MFWithBiasModel(nn.Module):
     def _init_embedding(self,  inp_size, out_size):
         return nn.Embedding(inp_size, out_size, sparse=True)
 
-    def save_model(self, saver):
-        model_kwargs = {"nusers": self.nusers, "nitems": self.nitems, "hidden_size": self.hidden_size}
-        model_name = f"mf_with_bias_{self.nusers}_{self.nitems}_{self.hidden_size}"
-        saver.save(model_name, self.state_dict(), model_kwargs)
+    def get_init_kwargs(self):
+        return {"nusers": self.nusers, "nitems": self.nitems, "hidden_size": self.hidden_size}
 
     def add_users(self, nusers):
         self.nusers += nusers
@@ -47,13 +46,7 @@ class MFWithBiasModel(nn.Module):
         return nn.init.normal_(tensor)
 
     def forward(self, user, item):
-        # print("input", user, item)
-        # try:
-        #     print("shapes", user.shape, item.shape)
         bias_sum = self.user_biases(user) + self.item_biases(item)
-        # except Exception as e:
-        #     print("exception!")
-        #     raise e
         user_emb = self.user_factors(user)
         item_emb = self.item_factors(item)
 

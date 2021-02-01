@@ -32,13 +32,14 @@ class Validator:
         for batch in user_data:
             (users_data, items_data), batch_labels = self.preprocessor.preprocess_batch(batch)
             batch_preds = self.model(users_data, items_data).squeeze().detach().numpy()
+            batch_preds = batch_preds.reshape(-1)
             batches_preds.append(batch_preds)
             items_of_user += list(items_data)
             labels += list(batch_labels)
 
         all_items_preds = np.concatenate(batches_preds)
-
-        items_preds_series = pd.Series(all_items_preds, index=self.all_item_ids)
+        items_preds_series = pd.Series(np.zeros(len(self.all_item_ids)), index=self.all_item_ids)
+        items_preds_series[items_of_user] = all_items_preds
         true_labels = self._get_all_item_labels(items_of_user, labels)
         score = self._score_preds(items_preds_series, true_labels)
         return score

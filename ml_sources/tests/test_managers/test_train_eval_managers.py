@@ -35,6 +35,7 @@ class TestTrainEvalManager(unittest.TestCase):
                                                        eval_strategy="steps",
                                                        nsteps=1)
         eval_res = manager.train_eval()
+        print("eval res", eval_res)
         self.assertEqual(len(eval_res), 6)
 
     def test_train_steps_break_because_of_steps(self):

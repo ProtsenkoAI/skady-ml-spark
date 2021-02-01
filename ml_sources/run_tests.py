@@ -13,10 +13,9 @@ runner.run(suite)
 
 # deleting dirrectory with saved results
 save_dir = config.save_dir
-print(save_dir)
 try:
     shutil.rmtree(save_dir)
 except OSError as e:
-    print ("Error while deleting save dir: %s - %s." % (e.filename, e.strerror))
+    print("Error while deleting save dir: %s - %s." % (e.filename, e.strerror))
 
 
