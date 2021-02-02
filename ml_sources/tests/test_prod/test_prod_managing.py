@@ -5,7 +5,7 @@ import os
 
 import prod_managing
 from recsys_pipeline.models import mf_with_bias
-from recsys_pipeline.saving import model_and_ids_saving
+from recsys_pipeline.saving import model_with_meta_and_ids_saving
 from recsys_pipeline.data_transform import preprocessing
 from recsys_pipeline.data import loader_factories
 from ..helpers import tests_config, objects_creation
@@ -49,7 +49,7 @@ class TestProdManager(unittest.TestCase):
         prod_manager = self._create_default_prod_manager()
         prod_manager.save()
         saver = self._create_default_saver()
-        model_saved = saver.check_model_exists(self.model_name)
+        model_saved = saver.check_model_exists()
         self.assertTrue(model_saved, "Prod Manager didn't save model after calling save_results()")
 
     def test_save_then_load(self):
@@ -112,8 +112,7 @@ class TestProdManager(unittest.TestCase):
         preprocessor = preprocessing.TensorCreator(DEVICE)
         dataloader_builder = loader_factories.StandardLoaderBuilder(batch_size=16)
 
-        prod_manager = prod_managing.ProdManager(self.model_name,
-                                                 model_saver=model_saver,
+        prod_manager = prod_managing.ProdManager(model_saver=model_saver,
                                                  preprocessor=preprocessor,
                                                  dataloader_builder=dataloader_builder,
                                                  train_kwargs={"lr": 2e-4},
@@ -124,9 +123,10 @@ class TestProdManager(unittest.TestCase):
         return prod_manager
 
     def _create_default_saver(self):
-        return model_and_ids_saving.ModelAndIdsSaver(save_dir=self.default_models_dir,
-                                                     params_file_name=self.saver_params_file_name,
-                                                     )
+        return model_with_meta_and_ids_saving.ModelAndIdsSaver(model_name=self.model_name,
+                                                               save_dir=self.default_models_dir,
+                                                               params_file_name=self.saver_params_file_name,
+                                                               )
 
     def load_ratings(self, nrows=20):
         return pd.read_csv(config.interacts_path, nrows=nrows)

@@ -1,15 +1,12 @@
 import sys
 import pandas as pd
 
-sys.path.insert(0, '../..')
-
 from recsys_pipeline.data_transform import id_idx_conv, preprocessing
 from recsys_pipeline.managers import trainers
 
 
 class ProdManager:
     def __init__(self,
-                 model_name,
                  model_saver,
                  preprocessor: preprocessing.TensorCreator,
                  dataloader_builder,
@@ -18,7 +15,6 @@ class ProdManager:
                  model_builder=None,
                  try_to_load_model=True):
 
-        self.model_name = model_name
         self.model_saver = model_saver
 
         self.user_colname = "user_id"
@@ -32,7 +28,7 @@ class ProdManager:
 
         self.try_to_load_model = try_to_load_model
 
-        if self.try_to_load_model and self.model_saver.check_model_exists(self.model_name):
+        if self.try_to_load_model and self.model_saver.check_model_exists():
             load_res = self._load_model_and_converters()
             self.model, self.user_conv, self.item_conv = load_res
             # achtung! Using none because have no interacts, may cause bugs
@@ -43,10 +39,7 @@ class ProdManager:
             self.trainer = None
 
     def save(self):
-        users_ids = self.user_conv.get_all_ids()
-        items_ids = self.item_conv.get_all_ids()
-        self.model_saver.save(self.model_name, self.model.state_dict(), users_ids, items_ids,
-                              meta_info=self.model.get_init_kwargs())
+        self.model_saver.save(self.model, self.user_conv, self.item_conv)
 
     def create_model_and_converters(self):
         model = self.model_builder(**self.model_init_kwargs)
@@ -77,9 +70,7 @@ class ProdManager:
         return user_preds
 
     def _load_model_and_converters(self):
-        model, (users_ids, items_ids) = self.model_saver.load(self.model_name)
-        user_conv = id_idx_conv.IdIdxConverter(*users_ids)
-        item_conv = id_idx_conv.IdIdxConverter(*items_ids)
+        model, (user_conv, item_conv) = self.model_saver.load()
         return model, user_conv, item_conv
 
     def _add_to_convs_and_convert_interacts(self, interacts):

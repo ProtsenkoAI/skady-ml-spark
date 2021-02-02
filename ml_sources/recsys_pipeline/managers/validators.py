@@ -12,9 +12,6 @@ class Validator:
         self.main_metric_name = main_metric_name
         self.preprocessor = preprocessor
 
-        self.labels_colname = "rating"
-        self.items_colname = "anime_id"
-
     def evaluate(self):
         eval_vals = []
         for user_data in self.users_datasets_retriever: # iterating on batches

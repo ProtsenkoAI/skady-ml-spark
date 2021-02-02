@@ -6,7 +6,7 @@ import torch
 
 from recsys_pipeline.models import mf_with_bias
 from recsys_pipeline.managers import train_eval_manager
-from recsys_pipeline.saving import model_and_ids_saving, model_state_dict_saving
+from recsys_pipeline.saving import model_with_meta_and_ids_saving, model_state_dict_saving
 from ..helpers import tests_config, objects_creation
 config = tests_config.TestsConfig()
 

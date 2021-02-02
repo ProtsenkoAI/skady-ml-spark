@@ -90,15 +90,13 @@ class TrainEvalManager:
 
     def save_model(self):
         model = self.trainer.get_model()
-        state_dict = model.state_dict()
-        self.model_saver.save(state_dict)
+        self.model_saver.save(model)
 
     def load_best_model(self):
         # loading only state dict (parameters) - model changes only params during training
         model = self.trainer.get_model()
-        state_dict = self.model_saver.load()
-        model.load_state_dict(state_dict)
-        return model
+        model_with_loaded_weights = self.model_saver.load(model)
+        return model_with_loaded_weights
 
     def _decide_train_continue(self):
         if not self.max_steps is None:

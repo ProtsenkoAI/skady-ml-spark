@@ -105,19 +105,30 @@ class TestMFWithBias(unittest.TestCase):
         self.assertEqual(old_nusers + 2, new_nusers)
 
     def test_saved_model_with_added_users_loads_with_correct_nusers(self):
+        nb_added_users = 2
         model = self._create_standard_model()
         old_nusers = model.get_init_kwargs()["nusers"]
-        model.add_users(nusers=2)
+        model.add_users(nusers=nb_added_users)
         model_init_kwargs_before_saving = model.get_init_kwargs()
         new_nusers_before_saving = model_init_kwargs_before_saving["nusers"]
-        self.assertEqual(old_nusers + 2, new_nusers_before_saving)
+        self.assertEqual(old_nusers + nb_added_users, new_nusers_before_saving)
 
         saver = objects_creation.get_simple_saver(save_dir=config.save_dir)
-        saver.save(model.state_dict())
+        saver.save(model)
 
-        new_model = objects_creation.get_mf_model(**model_init_kwargs_before_saving)
-        saved_state = saver.load()
-        new_model.load_state_dict(saved_state)
+        expected_number_of_users = self.standard_nusers + nb_added_users
+        new_model = saver.load(model)
+
+        some_item = 0
+        last_user = expected_number_of_users - 1
+        non_existent_user = expected_number_of_users
+
+        existent_user_inp = self.preprocessor.get_features_tensor([last_user, some_item])
+        pred_for_exist_user = new_model(*existent_user_inp)
+
+        non_existent_user_inp = self.preprocessor.get_features_tensor([non_existent_user, some_item])
+        with self.assertRaises(IndexError):
+            pred_non_exist = new_model(*non_existent_user_inp)
 
     def _create_standard_model(self):
         model = objects_creation.get_mf_model(self.standard_nusers,

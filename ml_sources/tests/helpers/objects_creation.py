@@ -6,7 +6,7 @@ from recsys_pipeline.data import datasets, loader_factories, datasets_retrievers
 from recsys_pipeline.data_transform import preprocessing, id_idx_conv
 from recsys_pipeline.managers import trainers, validators, train_eval_manager
 from recsys_pipeline.models import mf_with_bias
-from recsys_pipeline.saving import model_and_ids_saving, model_state_dict_saving
+from recsys_pipeline.saving import model_with_meta_and_ids_saving, model_state_dict_saving
 from . import tests_config
 config = tests_config.TestsConfig()
 
@@ -89,7 +89,7 @@ def get_validator(model, interact_nrows=20, batch_size=8):
 
 
 def get_meta_saver(default_models_dir="./"):
-    return model_and_ids_saving.ModelAndIdsSaver(save_dir=default_models_dir)
+    return model_with_meta_and_ids_saving.ModelAndIdsSaver(save_dir=default_models_dir)
 
 
 def get_simple_saver(save_dir="./"):

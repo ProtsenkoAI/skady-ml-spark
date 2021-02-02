@@ -28,28 +28,33 @@ class TestModelStateDictSaver(base_class.TestSaving):
 
     def test_save_load_custom_model_file_name(self):
         custom_model_name = "custom_weights_name"
-        saver = self._create_saver(model_file_name=custom_model_name)
+        saver = self._create_saver(model_name=custom_model_name)
         self._save_load_assert_parameters_equal(saver, self.standard_model)
 
     def test_save_load_multiple_models(self):
-        model1_name = "model1_weights"
-        saver1 = self._create_saver(model_file_name=model1_name)
+        saver1 = self._create_saver(model_name="model1_weights")
         self._save_load_assert_parameters_equal(saver1, self.standard_model)
 
         model2 = objects_creation.get_mf_model(self.nusers + 5, self.nitems + 5, hidden_size=self.hidden_size + 5)
-        model2_name = "model2_weights)"
-        saver2 = self._create_saver(model_file_name=model2_name)
+        saver2 = self._create_saver(model_name="model2_weights")
         self._save_load_assert_parameters_equal(saver2, model2)
 
+    def test_save_check_model_exists(self):
+        model = objects_creation.get_mf_model()
+        saver = self._create_saver()
+        saver.save(model)
+        self.assertTrue(saver.check_model_exists(), "File with saved model doesn't exist")
+
+    def test_check_model_exists_returns_false_if_didnt_save(self):
+        saver = self._create_saver(model_name="aklsdfjjkhfajkgjskfdhg")
+        self.assertFalse(saver.check_model_exists(), "Found saved model file, but model wasn't saved!")
+
     def _save_load_assert_parameters_equal(self, saver, model):
-        old_model = copy.deepcopy(self.standard_model)
-        state_dict = self.standard_model.state_dict()
-        saver.save(state_dict)
-        loaded_state_dict = saver.load()
-        self.standard_model.load_state_dict(loaded_state_dict)
-        new_model = self.standard_model
+        old_model = copy.deepcopy(model)
+        saver.save(old_model)
+        new_model = saver.load(old_model)
 
         self._assert_parameters_equal(old_model, new_model)
 
-    def _create_saver(self, save_dir=config.save_dir, model_file_name="model_weights"):
-        return model_state_dict_saving.ModelStateDictSaver(save_dir, model_file_name)
+    def _create_saver(self, save_dir=config.save_dir, model_name="model_weights"):
+        return model_state_dict_saving.ModelStateDictSaver(save_dir, model_name)
