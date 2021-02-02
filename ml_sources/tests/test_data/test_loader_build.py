@@ -2,7 +2,7 @@
 import unittest
 from torch.utils import data as torch_data
 
-from recsys_pipeline.data import loader_build, datasets
+from recsys_pipeline.data import loader_factories, datasets
 from ..helpers import tests_config, objects_creation
 config = tests_config.TestsConfig()
 
@@ -26,6 +26,6 @@ class TestStandardLoaderBuilder(unittest.TestCase):
 
     def _build_standard_loader(self):
         interacts = objects_creation.get_interacts(nrows=self.nrows)
-        builder = loader_build.StandardLoaderBuilder(batch_size=self.batch_size)
+        builder = loader_factories.StandardLoaderBuilder(batch_size=self.batch_size)
         loader = builder(interacts)
         return loader

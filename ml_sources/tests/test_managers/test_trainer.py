@@ -76,8 +76,8 @@ class TestTrainer(unittest.TestCase):
         users = interacts["user_id"][:5]
         items = interacts["anime_id"].unique()
 
-        proc_users = self.preprocessor.preprocess_users(users)
-        proc_items = self.preprocessor.preprocess_items(items)
+        proc_users = self.preprocessor.get_users_tensor(users)
+        proc_items = self.preprocessor.get_items_tensor(items)
         print(proc_users.shape, proc_items.shape)
 
         recommends = trainer.get_recommends_for_users(proc_users, proc_items)

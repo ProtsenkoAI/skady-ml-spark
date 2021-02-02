@@ -3,16 +3,15 @@ import pandas as pd
 
 sys.path.insert(0, '../..')
 
-from recsys_pipeline.data_transform import id_idx_converter, preprocessing
+from recsys_pipeline.data_transform import id_idx_conv, preprocessing
 from recsys_pipeline.managers import trainers
 
 
 class ProdManager:
-    # TODO: write dataloader_builder
     def __init__(self,
                  model_name,
                  model_saver,
-                 preprocessor: preprocessing.DataPreprocessor,
+                 preprocessor: preprocessing.TensorCreator,
                  dataloader_builder,
                  train_kwargs={},
                  model_init_kwargs={},
@@ -51,8 +50,8 @@ class ProdManager:
 
     def create_model_and_converters(self):
         model = self.model_builder(**self.model_init_kwargs)
-        user_conv = id_idx_converter.IdIdxConverter()
-        item_conv = id_idx_converter.IdIdxConverter()
+        user_conv = id_idx_conv.IdIdxConverter()
+        item_conv = id_idx_conv.IdIdxConverter()
         return model, user_conv, item_conv
 
     def add_interacts(self, new_interacts):
@@ -67,9 +66,9 @@ class ProdManager:
 
     def get_recommends(self, users):
         users_conved = self.user_conv.get_idxs(*users)
-        users_processed = self.preprocessor.preprocess_users(users_conved)
+        users_processed = self.preprocessor.get_users_tensor(users_conved)
         all_item_idxs = self.item_conv.get_all_idxs()
-        proc_item_idxs = self.preprocessor.preprocess_items(all_item_idxs)
+        proc_item_idxs = self.preprocessor.get_items_tensor(all_item_idxs)
         all_items_preds = self.trainer.get_recommends_for_users(users_processed, proc_item_idxs)  # omg wtf
         user_preds = []
         for user in all_items_preds:
@@ -79,8 +78,8 @@ class ProdManager:
 
     def _load_model_and_converters(self):
         model, (users_ids, items_ids) = self.model_saver.load(self.model_name)
-        user_conv = id_idx_converter.IdIdxConverter(*users_ids)
-        item_conv = id_idx_converter.IdIdxConverter(*items_ids)
+        user_conv = id_idx_conv.IdIdxConverter(*users_ids)
+        item_conv = id_idx_conv.IdIdxConverter(*items_ids)
         return model, user_conv, item_conv
 
     def _add_to_convs_and_convert_interacts(self, interacts):

@@ -77,7 +77,7 @@ class Trainer:
         return loss.item()
 
     def _calc_batch_loss(self, batch):
-        features, labels = self.preprocessor.preprocess_batch(batch)
+        features, labels = self.preprocessor.get_batch_tensor(batch)
         outputs = self.model(*features)
         return self.criterion(outputs.squeeze(), labels)
 

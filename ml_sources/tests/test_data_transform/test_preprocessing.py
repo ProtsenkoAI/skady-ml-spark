@@ -11,7 +11,7 @@ class TestDataPreprocessor(unittest.TestCase):
     """The main point is: whatever data are, outputs must be tensors"""
     def setUp(self):
         self.batchsize = 8
-        self.preprocessor = preprocessing.DataPreprocessor(config.device)
+        self.preprocessor = preprocessing.TensorCreator(config.device)
 
         # creating standard input data
         self.users = np.full(self.batchsize, 0)
@@ -21,14 +21,14 @@ class TestDataPreprocessor(unittest.TestCase):
         self.batch = [self.features, self.labels]
 
     def test_transform_batch_types(self):
-        out = self.preprocessor.preprocess_batch(self.batch)
+        out = self.preprocessor.get_batch_tensor(self.batch)
         (proc_users, proc_items), proc_labels = out
         
         for out_tensor in [proc_users, proc_items, proc_labels]:
             self.assertIsInstance(out_tensor, torch.Tensor)
 
     def test_transform_batch_shapes(self):
-        out = self.preprocessor.preprocess_batch(self.batch)
+        out = self.preprocessor.get_batch_tensor(self.batch)
         (proc_users, proc_items), proc_labels = out
 
         before_after_pairs = [(self.users, proc_users),
@@ -41,7 +41,7 @@ class TestDataPreprocessor(unittest.TestCase):
             self.assertEqual(len1, len2)
 
     def test_transform_users(self):
-        proc_users = self.preprocessor.preprocess_users(self.users)
+        proc_users = self.preprocessor.get_users_tensor(self.users)
         len1 = len(self.users)
         len2 = proc_users.shape[0]
 
@@ -49,7 +49,7 @@ class TestDataPreprocessor(unittest.TestCase):
         self.assertEqual(len1, len2)
 
     def test_transform_items(self):
-        proc_items = self.preprocessor.preprocess_items(self.items)
+        proc_items = self.preprocessor.get_items_tensor(self.items)
         len1 = len(self.items)
         len2 = proc_items.shape[0]
 
@@ -57,16 +57,16 @@ class TestDataPreprocessor(unittest.TestCase):
         self.assertEqual(len1, len2)
 
     def test_transform_user(self):
-        proc_user = self.preprocessor.preprocess_users(self.users[0])
+        proc_user = self.preprocessor.get_users_tensor(self.users[0])
         self.assertIsInstance(proc_user, torch.Tensor)
         self.assertEqual(proc_user.ndim, 0)
 
     def test_transform_item(self):
-        proc_item = self.preprocessor.preprocess_items(self.items[0])
+        proc_item = self.preprocessor.get_items_tensor(self.items[0])
         self.assertIsInstance(proc_item, torch.Tensor)
         self.assertEqual(proc_item.ndim, 0)
 
     def test_transform_x(self):
-        proc_users, proc_items = self.preprocessor.preprocess_x(self.features)
+        proc_users, proc_items = self.preprocessor.get_features_tensor(self.features)
         self.assertIsInstance(proc_users, torch.Tensor)
         self.assertIsInstance(proc_items, torch.Tensor)

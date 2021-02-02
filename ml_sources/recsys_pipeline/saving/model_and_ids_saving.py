@@ -4,7 +4,7 @@ import torch
 from ..models import mf_with_bias
 
 
-class MetaModelSaver:
+class ModelAndIdsSaver:
     def __init__(self, save_dir="./", params_file_name="models_parameters.json",
                  model_file_postfix="_weights", model_creator=mf_with_bias.MFWithBiasModel):
         self.save_dir = save_dir

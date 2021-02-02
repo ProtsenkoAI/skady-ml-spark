@@ -5,8 +5,8 @@ import pandas as pd
 import torch
 
 from recsys_pipeline.models import mf_with_bias
-from recsys_pipeline.managers import train_eval_managers
-from recsys_pipeline.saving import meta_model_saving, model_state_dict_saving
+from recsys_pipeline.managers import train_eval_manager
+from recsys_pipeline.saving import model_and_ids_saving, model_state_dict_saving
 from ..helpers import tests_config, objects_creation
 config = tests_config.TestsConfig()
 
@@ -18,9 +18,9 @@ class TestTrainEvalManager(unittest.TestCase):
         trainer = objects_creation.get_trainer(model, interacts_nrows=10, batch_size=5)
         validator = objects_creation.get_validator(model)
 
-        manager = train_eval_managers.TrainEvalManager(trainer, validator,
-                                                       max_steps=10, max_epochs=100,
-                                                       eval_strategy="epoch")
+        manager = train_eval_manager.TrainEvalManager(trainer, validator,
+                                                      max_steps=10, max_epochs=100,
+                                                      eval_strategy="epoch")
 
         eval_res = manager.train_eval()
         self.assertEqual(len(eval_res), 5)
@@ -30,10 +30,10 @@ class TestTrainEvalManager(unittest.TestCase):
         trainer = objects_creation.get_trainer(model, interacts_nrows=10, batch_size=9)
         validator = objects_creation.get_validator(model)
 
-        manager = train_eval_managers.TrainEvalManager(trainer, validator,
-                                                       max_steps=5000, max_epochs=3,
-                                                       eval_strategy="steps",
-                                                       nsteps=1)
+        manager = train_eval_manager.TrainEvalManager(trainer, validator,
+                                                      max_steps=5000, max_epochs=3,
+                                                      eval_strategy="steps",
+                                                      nsteps=1)
         eval_res = manager.train_eval()
         print("eval res", eval_res)
         self.assertEqual(len(eval_res), 6)
@@ -43,10 +43,10 @@ class TestTrainEvalManager(unittest.TestCase):
         trainer = objects_creation.get_trainer(model, interacts_nrows=10, batch_size=5)
         validator = objects_creation.get_validator(model)
 
-        manager = train_eval_managers.TrainEvalManager(trainer, validator,
-                                                       max_steps=10,
-                                                       eval_strategy="steps",
-                                                       nsteps=5)
+        manager = train_eval_manager.TrainEvalManager(trainer, validator,
+                                                      max_steps=10,
+                                                      eval_strategy="steps",
+                                                      nsteps=5)
         eval_res = manager.train_eval()
         self.assertEqual(len(eval_res), 2)
 
@@ -55,9 +55,9 @@ class TestTrainEvalManager(unittest.TestCase):
         trainer = objects_creation.get_trainer(model)
         validator = objects_creation.get_validator(model)
 
-        manager = train_eval_managers.TrainEvalManager(trainer, validator,
-                                                       max_epochs=4,
-                                                       eval_strategy="epoch")
+        manager = train_eval_manager.TrainEvalManager(trainer, validator,
+                                                      max_epochs=4,
+                                                      eval_strategy="epoch")
         eval_res = manager.train_eval()
         self.assertEqual(len(eval_res), 4)
 
@@ -70,10 +70,10 @@ class TestTrainEvalManager(unittest.TestCase):
         trainer = objects_creation.get_trainer(model)
         validator = objects_creation.get_validator(model)
 
-        manager = train_eval_managers.TrainEvalManager(trainer, validator,
-                                                       eval_strategy="epoch",
-                                                       stopping_patience=2,
-                                                       max_steps=100)
+        manager = train_eval_manager.TrainEvalManager(trainer, validator,
+                                                      eval_strategy="epoch",
+                                                      stopping_patience=2,
+                                                      max_steps=100)
         eval_res = manager.train_eval()
         pass
 
@@ -84,13 +84,13 @@ class TestTrainEvalManager(unittest.TestCase):
 
         model_saver = model_state_dict_saving.ModelStateDictSaver(save_dir=config.save_dir)
 
-        manager = train_eval_managers.TrainEvalManager(trainer,
-                                                       validator,
-                                                       eval_strategy="steps",
-                                                       save_best_model=True,
-                                                       nsteps=4,
-                                                       max_steps=12,
-                                                       model_saver=model_saver)
+        manager = train_eval_manager.TrainEvalManager(trainer,
+                                                      validator,
+                                                      eval_strategy="steps",
+                                                      save_best_model=True,
+                                                      nsteps=4,
+                                                      max_steps=12,
+                                                      model_saver=model_saver)
         eval_results, best_model = manager.train_eval()
         self.assertIsInstance(best_model, type(model))
         self.assertEqual(len(eval_results), 3)
@@ -103,10 +103,10 @@ class TestTrainEvalManager(unittest.TestCase):
         model_saver = objects_creation.get_meta_saver()
 
         with self.assertRaises(ValueError):
-            manager = train_eval_managers.TrainEvalManager(trainer,
-                                                        validator,
-                                                        eval_strategy="steps",
-                                                        save_best_model=True,
-                                                        #nsteps=1000 #nsteps not specified!
-                                                        max_steps=3000,
-                                                        model_saver=model_saver)
+            manager = train_eval_manager.TrainEvalManager(trainer,
+                                                          validator,
+                                                          eval_strategy="steps",
+                                                          save_best_model=True,
+                                                          #nsteps=1000 #nsteps not specified!
+                                                          max_steps=3000,
+                                                          model_saver=model_saver)

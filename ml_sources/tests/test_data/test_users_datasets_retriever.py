@@ -2,7 +2,7 @@ import unittest
 import pandas as pd
 from torch.utils import data as torch_data
 
-from recsys_pipeline.data import datasets_retrievers, loader_build
+from recsys_pipeline.data import datasets_retrievers, loader_factories
 from ..helpers import tests_config
 config = tests_config.TestsConfig()
 
@@ -25,6 +25,6 @@ class TestUsersDatasetsRetriever(unittest.TestCase):
         self.assertFalse(sample1 == sample2)
 
     def _create_standard_retriever(self):
-        loader_builder = loader_build.StandardLoaderBuilder(self.batch_size)
+        loader_builder = loader_factories.StandardLoaderBuilder(self.batch_size)
         interacts = pd.read_csv(config.interacts_path, nrows=self.nrows)
         return datasets_retrievers.UsersDatasetsRetriever(interacts, loader_builder)

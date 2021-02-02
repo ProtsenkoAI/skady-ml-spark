@@ -2,11 +2,11 @@ import torch
 from torch.utils import data as torch_data
 import pandas as pd
 
-from recsys_pipeline.data import datasets, loader_build, datasets_retrievers
-from recsys_pipeline.data_transform import preprocessing, id_idx_converter
-from recsys_pipeline.managers import trainers, validators, train_eval_managers
+from recsys_pipeline.data import datasets, loader_factories, datasets_retrievers
+from recsys_pipeline.data_transform import preprocessing, id_idx_conv
+from recsys_pipeline.managers import trainers, validators, train_eval_manager
 from recsys_pipeline.models import mf_with_bias
-from recsys_pipeline.saving import meta_model_saving, model_state_dict_saving
+from recsys_pipeline.saving import model_and_ids_saving, model_state_dict_saving
 from . import tests_config
 config = tests_config.TestsConfig()
 
@@ -45,7 +45,7 @@ def get_loader(nrows=20, batch_size=8):
 
 
 def get_datasets_retriever(interacts, batch_size=8):
-    loader_builder = loader_build.StandardLoaderBuilder(batch_size=batch_size)
+    loader_builder = loader_factories.StandardLoaderBuilder(batch_size=batch_size)
     retriever = datasets_retrievers.UsersDatasetsRetriever(interacts, loader_builder)
     return retriever
 
@@ -63,11 +63,11 @@ def get_mf_model(nusers=20, nitems=20, **kwargs):
 
 
 def get_preprocessor():
-    return preprocessing.DataPreprocessor(config.device)
+    return preprocessing.TensorCreator(config.device)
 
 
 def get_id_converter(*ids):
-    return id_idx_converter.IdIdxConverter(*ids)
+    return id_idx_conv.IdIdxConverter(*ids)
 
 
 def get_trainer(model, interacts_nrows=20, batch_size=8):
@@ -89,7 +89,7 @@ def get_validator(model, interact_nrows=20, batch_size=8):
 
 
 def get_meta_saver(default_models_dir="./"):
-    return meta_model_saving.MetaModelSaver(save_dir=default_models_dir)
+    return model_and_ids_saving.ModelAndIdsSaver(save_dir=default_models_dir)
 
 
 def get_simple_saver(save_dir="./"):

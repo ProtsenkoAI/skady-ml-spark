@@ -4,7 +4,7 @@ import torch
 import os
 
 from recsys_pipeline.models import mf_with_bias
-from recsys_pipeline.saving import meta_model_saving
+from recsys_pipeline.saving import model_and_ids_saving
 from ..helpers import tests_config, objects_creation
 from . import base_class
 config = tests_config.TestsConfig()
@@ -19,7 +19,7 @@ class TestMetaModelSaving(base_class.TestSaving):
         self.user_conv = objects_creation.get_id_converter(*self.standard_users)
 
     def test_simple_model_saving(self):
-        saver = meta_model_saving.MetaModelSaver(save_dir=self.save_dir)
+        saver = model_and_ids_saving.ModelAndIdsSaver(save_dir=self.save_dir)
         model, loaded_model, (saved_user_ids, saved_item_ids) = self._save_load_standard_model(saver,
                                                              "simple_model_104_104_20", 10**4, 10**4, 20)
         self._assert_parameters_equal(model, loaded_model)
@@ -27,8 +27,8 @@ class TestMetaModelSaving(base_class.TestSaving):
         self.assertIsInstance(saved_item_ids, list)
 
     def test_model_saving_with_custom_path_and_prefix(self):
-        saver = meta_model_saving.MetaModelSaver(save_dir=self.save_dir, params_file_name="params_aaa.json",
-                                            model_file_postfix="_omg_weights")
+        saver = model_and_ids_saving.ModelAndIdsSaver(save_dir=self.save_dir, params_file_name="params_aaa.json",
+                                                      model_file_postfix="_omg_weights")
         model, loaded_model, (saved_user_ids, saved_item_ids) = self._save_load_standard_model(saver, "model", 10, 10, 10)
 
         self._assert_parameters_equal(model, loaded_model)
@@ -38,7 +38,7 @@ class TestMetaModelSaving(base_class.TestSaving):
         self.assertTrue(os.path.isfile(os.path.join(self.save_dir, "model_omg_weights.pt")))
 
     def test_saving_loading_multiple_models(self):
-        saver = meta_model_saving.MetaModelSaver(save_dir=self.save_dir)
+        saver = model_and_ids_saving.ModelAndIdsSaver(save_dir=self.save_dir)
         model1_kwargs = {"nusers": 1, "nitems": 1, "hidden_size": 1}
         model1 = mf_with_bias.MFWithBiasModel(**model1_kwargs)
 
@@ -55,7 +55,7 @@ class TestMetaModelSaving(base_class.TestSaving):
 
     def test_check_model_exists(self):
         model_name = "model_aabbcc"
-        saver = meta_model_saving.MetaModelSaver(save_dir=self.save_dir, params_file_name="params_for_exists_test.json")
+        saver = model_and_ids_saving.ModelAndIdsSaver(save_dir=self.save_dir, params_file_name="params_for_exists_test.json")
         non_existing_model_result = saver.check_model_exists(model_name)
 
         model_kwargs = {"nusers": 2, "nitems": 2, "hidden_size": 2}
@@ -76,7 +76,7 @@ class TestMetaModelSaving(base_class.TestSaving):
         src_user_indexes = self.user_conv.get_idxs(*src_user_ids)
         src_item_indexes = self.item_conv.get_idxs(*src_item_ids)
 
-        saver = meta_model_saving.MetaModelSaver(save_dir=self.save_dir, params_file_name="params_for_ids_saving_check.json")
+        saver = model_and_ids_saving.ModelAndIdsSaver(save_dir=self.save_dir, params_file_name="params_for_ids_saving_check.json")
         _, _, (loaded_user_ids, loaded_item_ids) = self._save_load_standard_model(saver, "idk_some_model")
 
         loaded_user_indexes = self.user_conv.get_idxs(*loaded_user_ids)

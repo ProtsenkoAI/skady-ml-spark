@@ -15,13 +15,13 @@ class TestMFWithBias(unittest.TestCase):
         self.standard_nitems = 5000
         self.standard_hidden_size = 50
         
-        self.preprocessor = preprocessing.DataPreprocessor(device)
+        self.preprocessor = preprocessing.TensorCreator(device)
         user_and_item = (343, 123)
-        self.standard_single_inp = self.preprocessor.preprocess_x(user_and_item)
+        self.standard_single_inp = self.preprocessor.get_features_tensor(user_and_item)
 
         self.batchsize = 8
         users_items = [user_and_item for _ in range(self.batchsize)]
-        self.standard_batch = self.preprocessor.preprocess_x(users_items)
+        self.standard_batch = self.preprocessor.get_features_tensor(users_items)
 
     def test_creating_model(self):
         model = self._create_standard_model()
@@ -55,7 +55,7 @@ class TestMFWithBias(unittest.TestCase):
         model = self._create_standard_model()
         new_user_id = self.standard_nusers # idxes start with 0
         some_item = 333
-        input_with_new_user = self.preprocessor.preprocess_x([new_user_id, some_item])
+        input_with_new_user = self.preprocessor.get_features_tensor([new_user_id, some_item])
 
         model.add_users(1)
         pred = model(*input_with_new_user)
@@ -65,7 +65,7 @@ class TestMFWithBias(unittest.TestCase):
         model = self._create_standard_model()
         new_item_id = self.standard_nitems # idxes start with 0
         some_user = 333
-        input_with_new_item = self.preprocessor.preprocess_x([some_user, new_item_id])
+        input_with_new_item = self.preprocessor.get_features_tensor([some_user, new_item_id])
 
         model.add_items(1)
         pred = model(*input_with_new_item)
@@ -76,7 +76,7 @@ class TestMFWithBias(unittest.TestCase):
         new_ids = [self.standard_nusers + idx for idx in range(5)] # 5 users
         some_item = 333
         x = [[user_id, some_item] for user_id in new_ids]
-        input_with_new_users = self.preprocessor.preprocess_x(x)
+        input_with_new_users = self.preprocessor.get_features_tensor(x)
 
         model.add_users(len(new_ids))
         pred = model(*input_with_new_users)
@@ -86,7 +86,7 @@ class TestMFWithBias(unittest.TestCase):
         new_item_ids = [self.standard_nitems + idx for idx in range(5)] # 5 users
         some_user = 333
         x = [[some_user, item_id] for item_id in new_item_ids]
-        input_with_new_items = self.preprocessor.preprocess_x(x)
+        input_with_new_items = self.preprocessor.get_features_tensor(x)
 
         model.add_items(len(new_item_ids))
         pred = model(*input_with_new_items)

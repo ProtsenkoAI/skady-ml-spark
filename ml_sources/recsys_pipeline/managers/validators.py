@@ -30,7 +30,7 @@ class Validator:
         labels = []
 
         for batch in user_data:
-            (users_data, items_data), batch_labels = self.preprocessor.preprocess_batch(batch)
+            (users_data, items_data), batch_labels = self.preprocessor.get_batch_tensor(batch)
             batch_preds = self.model(users_data, items_data).squeeze().detach().numpy()
             batch_preds = batch_preds.reshape(-1)
             batches_preds.append(batch_preds)

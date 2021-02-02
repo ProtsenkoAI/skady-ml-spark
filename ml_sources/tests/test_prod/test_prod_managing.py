@@ -1,4 +1,3 @@
-# TODO
 import unittest
 import torch
 import pandas as pd
@@ -6,9 +5,9 @@ import os
 
 import prod_managing
 from recsys_pipeline.models import mf_with_bias
-from recsys_pipeline.saving import meta_model_saving
+from recsys_pipeline.saving import model_and_ids_saving
 from recsys_pipeline.data_transform import preprocessing
-from recsys_pipeline.data import loader_build
+from recsys_pipeline.data import loader_factories
 from ..helpers import tests_config, objects_creation
 
 config = tests_config.TestsConfig()
@@ -107,12 +106,11 @@ class TestProdManager(unittest.TestCase):
 
         self._validate_recommends_format(recommends, len(some_users))
 
-
     def _create_default_prod_manager(self, try_to_load=True):
         interacts = objects_creation.get_interacts(self.nrows)
         model_saver = self._create_default_saver()
-        preprocessor = preprocessing.DataPreprocessor(DEVICE)
-        dataloader_builder = loader_build.StandardLoaderBuilder(batch_size=16)
+        preprocessor = preprocessing.TensorCreator(DEVICE)
+        dataloader_builder = loader_factories.StandardLoaderBuilder(batch_size=16)
 
         prod_manager = prod_managing.ProdManager(self.model_name,
                                                  model_saver=model_saver,
@@ -126,9 +124,9 @@ class TestProdManager(unittest.TestCase):
         return prod_manager
 
     def _create_default_saver(self):
-        return meta_model_saving.MetaModelSaver(save_dir=self.default_models_dir,
-                                                params_file_name=self.saver_params_file_name,
-                                                )
+        return model_and_ids_saving.ModelAndIdsSaver(save_dir=self.default_models_dir,
+                                                     params_file_name=self.saver_params_file_name,
+                                                     )
 
     def load_ratings(self, nrows=20):
         return pd.read_csv(config.interacts_path, nrows=nrows)
