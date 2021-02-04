@@ -59,7 +59,6 @@ class ModelAndIdsSaver:
             json.dump(data, f)
 
     def _load_objects(self, model_data):
-        print("model_data", model_data)
         user_ids = model_data["conv_ids"]["users"]
         item_ids = model_data["conv_ids"]["items"]
 

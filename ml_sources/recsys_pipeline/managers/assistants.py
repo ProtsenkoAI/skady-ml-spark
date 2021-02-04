@@ -6,8 +6,7 @@ from data_transform import id_idx_conv, preprocessing
 
 
 class ModelAssistant:
-    def __init__(self, model, batch_size=64):
-        self.model = model
+    def __init__(self, batch_size=64):
         self.user_conv = id_idx_conv.IdIdxConverter()
         self.item_conv = id_idx_conv.IdIdxConverter()
         self.tensor_creator = preprocessing.TensorCreator(device="cpu")
@@ -16,21 +15,18 @@ class ModelAssistant:
         self.user_colname = "user_id"
         self.item_colname = "anime_id"
 
-    def preproc_labels(self, labels):
-        return self.tensor_creator.get_labels_tensor(labels)
-
-    def preproc_then_forward(self, features, parts_concated=True):
+    def preproc_then_forward(self, model, features, parts_concated=True):
         proc_features = self.preprocess_features(features, parts_concated)
-        preds = self.model.forward(*proc_features)
+        preds = model.forward(*proc_features)
         return preds
 
-    def get_recommends(self, users_ids):
-        items_probas = self.get_probas_with_all_items(users_ids)
-        sorted_indexes = np.argsort(items_probas, axis=1)[::-1] # inverting: from highest rating to lowest
+    def get_recommends(self, model, users_ids):
+        items_probs = self.get_items_probs(model, users_ids)
+        sorted_indexes = np.argsort(items_probs, axis=1)[::-1] # inverting: from highest rating to lowest
         sorted_ids = self.postprocess_recommends(sorted_indexes)
         return sorted_ids
 
-    def get_probas_with_all_items(self, user_ids):
+    def get_items_probs(self, model, user_ids):
         all_items = self.item_conv.get_all_ids()
         item_batches = self._create_batches(all_items, self.batch_size)
 
@@ -38,7 +34,7 @@ class ModelAssistant:
         for user in user_ids:
             users_probas.append([])
             for batch in item_batches:
-                preds = self.preproc_then_forward((user, batch), parts_concated=False)
+                preds = self.preproc_then_forward(model, (user, batch), parts_concated=False)
                 users_probas[-1] += list(preds)
         users_probas = np.array(users_probas)
         return users_probas
@@ -77,6 +73,9 @@ class ModelAssistant:
         users_tensor = self.preprocess_users(*users)
         items_tensor = self.preprocess_items(*items)
         return users_tensor, items_tensor
+
+    def preproc_labels(self, labels):
+        return self.tensor_creator.get_labels_tensor(labels)
 
     def preprocess_users(self, *users):
         users_idxs = self.user_conv.get_idxs(*users)
