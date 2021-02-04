@@ -1,4 +1,3 @@
-import sys
 import pandas as pd
 
 from recsys_pipeline.data_transform import id_idx_conv, preprocessing

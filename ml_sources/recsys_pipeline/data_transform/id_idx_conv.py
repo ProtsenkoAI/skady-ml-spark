@@ -37,13 +37,13 @@ class IdIdxConverter:
                 self.idx2id[idx] = obj_id
 
     def get_idxs(self, *ids):
-        idxs = [self.id2idx[id] for id in ids]
+        idxs = [self.id2idx[int(id)] for id in ids]
         if len(idxs) == 1:
             return idxs[0]
         return idxs
 
     def get_ids(self, *idxs):
-        ids = [self.idx2id[idx] for idx in idxs]
+        ids = [self.idx2id[int(idx)] for idx in idxs]
         if len(ids) == 1:
             return ids[0]
         return ids

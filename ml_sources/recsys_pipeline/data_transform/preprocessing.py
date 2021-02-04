@@ -1,5 +1,4 @@
 import torch
-from collections.abc import Iterable
 from .preproc_helpers import wrap_in_list_if_number
 
 
@@ -9,7 +8,7 @@ class TensorCreator:
 
     def get_batch_tensor(self, batch):
         features, labels = batch
-        users, items = self._split_users_items(features)
+        users, items = features
 
         users_proc = self.get_users_tensor(users)
         items_proc = self.get_items_tensor(items)
@@ -17,7 +16,7 @@ class TensorCreator:
         return (users_proc, items_proc), labels_preprocessed
 
     def get_features_tensor(self, users_items):
-        users, items = self._split_users_items(users_items)
+        users, items = users_items
         users_proc = self.get_users_tensor(users)
         items_proc = self.get_items_tensor(items)
         
@@ -41,12 +40,5 @@ class TensorCreator:
         if not isinstance(index_features, torch.Tensor):
             index_features = torch.tensor(index_features)
         index_features = index_features.to(self.device).long()
+        # index_features = index_features.reshape(-1, 1)
         return index_features
-
-    def _split_users_items(self, batch_or_pair):
-        if isinstance(batch_or_pair[0], Iterable):
-            users, items = zip(*batch_or_pair)
-        else:
-            users, items = batch_or_pair
-        return users, items
-
