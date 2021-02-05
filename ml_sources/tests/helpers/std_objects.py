@@ -4,6 +4,8 @@ from recsys_pipeline.saving import WeightsSaver
 from recsys_pipeline.model_level.assistance import ModelAssistant
 from recsys_pipeline.model_level.models import MFWithBiasModel
 from recsys_pipeline.model_level.data_processing import DataProcessor, IdIdxConv
+from recsys_pipeline.using_model_level.training import Trainer
+from recsys_pipeline.using_model_level.evaluating import Validator
 
 from ..helpers import tests_config
 config = tests_config.TestsConfig()
@@ -21,9 +23,9 @@ def get_weights_saver():
     return WeightsSaver(save_dir=config.save_dir)
 
 
-def get_trainer():
-    ...
+def get_trainer(assistant):
+    return Trainer(assistant)
 
 
-def get_validator():
-    ...
+def get_validator(assistant):
+    return Validator(assistant)
