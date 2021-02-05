@@ -37,14 +37,14 @@ class Trainer:
         self.model.add_items(nitems)
         self._init_train_parts()
     
-    def get_recommends_for_users(self, users, item_ids):
-        # TODO: separate into some ModelManager
-        preds_by_user = []
-        for user in users:
-            pred = self.model(user, item_ids).squeeze().detach().numpy()
-            recommended_items_idxs = np.argsort(pred)[::-1]
-            preds_by_user.append(recommended_items_idxs)
-        return preds_by_user
+    # def get_recommends_for_users(self, users, item_ids):
+    #     # TODO: separate into some ModelManager
+    #     preds_by_user = []
+    #     for user in users:
+    #         pred = self.model(user, item_ids).squeeze().detach().numpy()
+    #         recommended_items_idxs = np.argsort(pred)[::-1]
+    #         preds_by_user.append(recommended_items_idxs)
+    #     return preds_by_user
 
     def fit(self, nsteps=None, nepochs=None):
         steps_left = self._get_steps_left_from_steps_epochs(nsteps, nepochs)

@@ -52,7 +52,6 @@ class ProdManager:
         self._add_new_users_and_items_to_model(new_inters_conved)
 
     def fit(self, nepochs=None, nsteps=None):
-        print(self.interacts.describe())
         self.trainer = self._create_trainer(self.model, self.interacts)
         self.trainer.fit(nepochs, nsteps)
 

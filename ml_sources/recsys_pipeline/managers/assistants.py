@@ -1,50 +1,26 @@
 from collections.abc import Iterable
-import numpy as np
 
 from data_transform import id_idx_conv, preprocessing
-# from data import loader_factories
 
 
 class ModelAssistant:
-    def __init__(self, batch_size=64):
+    def __init__(self):
         self.user_conv = id_idx_conv.IdIdxConverter()
         self.item_conv = id_idx_conv.IdIdxConverter()
         self.tensor_creator = preprocessing.TensorCreator(device="cpu")
-        self.batch_size = batch_size
 
         self.user_colname = "user_id"
         self.item_colname = "anime_id"
+
+    def get_all_items(self):
+        return self.item_conv.get_all_ids()
 
     def preproc_then_forward(self, model, features, parts_concated=True):
         proc_features = self.preprocess_features(features, parts_concated)
         preds = model.forward(*proc_features)
         return preds
 
-    def get_recommends(self, model, users_ids):
-        items_probs = self.get_items_probs(model, users_ids)
-        sorted_indexes = np.argsort(items_probs, axis=1)[::-1] # inverting: from highest rating to lowest
-        sorted_ids = self.postprocess_recommends(sorted_indexes)
-        return sorted_ids
-
-    def get_items_probs(self, model, user_ids):
-        all_items = self.item_conv.get_all_ids()
-        item_batches = self._create_batches(all_items, self.batch_size)
-
-        users_probas = []
-        for user in user_ids:
-            users_probas.append([])
-            for batch in item_batches:
-                preds = self.preproc_then_forward(model, (user, batch), parts_concated=False)
-                users_probas[-1] += list(preds)
-        users_probas = np.array(users_probas)
-        return users_probas
-
-    def _create_batches(self, values, batch_size):
-        batches = [values[start_idx: start_idx + batch_size]
-                   for start_idx in range(0, len(values), batch_size)]
-        return batches
-
-    def update_with_new_interacts(self, interacts):
+    def update_with_new_interacts(self, model, interacts):
         users = interacts[self.user_colname]
         items = interacts[self.item_colname]
         user_indexes = self.user_conv.add_ids_get_idxs(*users)
@@ -52,19 +28,19 @@ class ModelAssistant:
 
         users_needed_for_interacts = max(user_indexes) + 1
         items_needed_for_interacts = max(item_indexes) + 1
-        self._enlarge_model_if_needed(users_needed_for_interacts, items_needed_for_interacts)
+        self._enlarge_model_if_needed(model, users_needed_for_interacts, items_needed_for_interacts)
 
-    def _enlarge_model_if_needed(self, need_users, need_items):
-        model_stats = self.model.get_init_kwargs()
+    def _enlarge_model_if_needed(self, model, need_users, need_items):
+        model_stats = model.get_init_kwargs()
         curr_nusers = model_stats["nusers"]
         curr_nitems = model_stats["nitems"]
 
         diff_users = need_users - curr_nusers
         if diff_users > 0:
-            self.model.add_users(diff_users)
+            model.add_users(diff_users)
         diff_items = need_items - curr_nitems
         if diff_items > 0:
-            self.model.add_items(diff_items)
+            model.add_items(diff_items)
 
     def preprocess_features(self, features, parts_concated=False):
         users, items = self._split_users_items(features, parts_concated)
