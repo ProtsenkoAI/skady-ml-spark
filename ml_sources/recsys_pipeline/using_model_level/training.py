@@ -1,9 +1,9 @@
 class Trainer:
-    def __init__(self, assistant):
-        self.assistant = assistant
+    def __init__(self):
+        ...
 
     def get_dataset_len(self):
         return 10
 
-    def fit(self, nsteps=None, nepochs=None):
+    def fit(self, assistant, nsteps=None, nepochs=None):
         ...

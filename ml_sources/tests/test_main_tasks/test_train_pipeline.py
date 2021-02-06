@@ -4,6 +4,7 @@
 import unittest
 
 from recsys_pipeline.main_tasks.train_pipeline import TrainPipelineManager
+from recsys_pipeline.main_tasks.train_pipeline_scheduler import TrainPipelineScheduler
 from recsys_pipeline.model_level.assistance import ModelAssistant
 from ..helpers.objs_pool import ObjsPool
 objs_pool = ObjsPool()
@@ -19,35 +20,46 @@ class TestTrainPipelineManager(unittest.TestCase):
     def test_eval_every_epoch_break_because_of_steps(self):
         max_steps = 10
         epochs_in_max_steps = 1
-        manager = TrainPipelineManager(objs_pool.assistant, objs_pool.trainer,
+        trainer = objs_pool.trainer
+        steps_in_epoch = trainer.get_dataset_len()
+        scheduler = TrainPipelineScheduler(steps_in_epoch, max_steps=max_steps, max_epochs=5, eval_strategy="epochs")
+        manager = TrainPipelineManager(objs_pool.assistant, trainer,
                                        objs_pool.validator, objs_pool.weights_saver,
-                                       max_steps=max_steps, max_epochs=5, eval_strategy="epochs")
+                                       scheduler)
 
         eval_res = manager.run()
         self.assertEqual(len(eval_res), epochs_in_max_steps)
 
     def test_eval_every_nsteps_break_because_of_steps(self):
         max_steps = 10
-        manager = TrainPipelineManager(objs_pool.assistant, objs_pool.trainer,
-                                       objs_pool.validator, objs_pool.weights_saver,
-                                       max_steps=max_steps, max_epochs=5, eval_strategy="steps",
-                                       nsteps=8)
+        trainer = objs_pool.trainer
+        steps_in_epoch = trainer.get_dataset_len()
+        scheduler = TrainPipelineScheduler(steps_in_epoch, max_steps=max_steps, max_epochs=5,
+                                           eval_strategy="steps", nsteps=8)
+        manager = TrainPipelineManager(objs_pool.assistant, trainer,
+                                       objs_pool.validator, objs_pool.weights_saver, scheduler)
 
         eval_res = manager.run()
         self.assertEqual(len(eval_res), 2)
 
     def test_eval_every_epoch_break_because_of_epochs(self):
-        manager = TrainPipelineManager(objs_pool.assistant, objs_pool.trainer,
+        trainer = objs_pool.trainer
+        steps_in_epoch = trainer.get_dataset_len()
+        scheduler = TrainPipelineScheduler(steps_in_epoch, max_steps=9999, max_epochs=5, eval_strategy="epochs")
+        manager = TrainPipelineManager(objs_pool.assistant, trainer,
                                        objs_pool.validator, objs_pool.weights_saver,
-                                       max_steps=9999, max_epochs=5, eval_strategy="epochs")
+                                       scheduler)
 
         eval_res = manager.run()
         self.assertEqual(len(eval_res), 5)
 
     def test_eval_every_nsteps_break_because_of_epochs(self):
-        manager = TrainPipelineManager(objs_pool.assistant, objs_pool.trainer,
-                                                 objs_pool.validator, objs_pool.weights_saver,
-                                                 max_steps=9999, max_epochs=5, eval_strategy="steps", nsteps=5)
+        trainer = objs_pool.trainer
+        steps_in_epoch = trainer.get_dataset_len()
+        scheduler = TrainPipelineScheduler(steps_in_epoch, max_steps=9999, max_epochs=5,
+                                           eval_strategy="steps", nsteps=5)
+        manager = TrainPipelineManager(objs_pool.assistant, trainer,
+                                       objs_pool.validator, objs_pool.weights_saver, scheduler)
 
         eval_res = manager.run()
         self.assertEqual(len(eval_res), 10)
@@ -57,17 +69,20 @@ class TestTrainPipelineManager(unittest.TestCase):
         exceeding. So we'll just set stopping patience, as well as max_steps and'll check that the manager
         will not break at functions devoted for stopping_patience checking
         """
-        manager = TrainPipelineManager(objs_pool.assistant, objs_pool.trainer,
-                                       objs_pool.validator, objs_pool.weights_saver,
-                                       eval_strategy="steps", nsteps=5,
-                                       stop_patience=2)
+        trainer = objs_pool.trainer
+        steps_in_epoch = trainer.get_dataset_len()
+        scheduler = TrainPipelineScheduler(steps_in_epoch, eval_strategy="steps", nsteps=5, stop_patience=2)
+        manager = TrainPipelineManager(objs_pool.assistant, trainer,
+                                       objs_pool.validator, objs_pool.weights_saver, scheduler)
 
         eval_res = manager.run()
         pass
 
     def test_raises_error_if_eval_strategy_steps_but_no_nsteps_provided(self):
-        manager = TrainPipelineManager(objs_pool.assistant, objs_pool.trainer,
-                                       objs_pool.validator, objs_pool.weights_saver,
-                                       eval_strategy="steps")
+        trainer = objs_pool.trainer
+        steps_in_epoch = trainer.get_dataset_len()
+        scheduler = TrainPipelineScheduler(steps_in_epoch, eval_strategy="steps")
+        manager = TrainPipelineManager(objs_pool.assistant, trainer,
+                                       objs_pool.validator, objs_pool.weights_saver, scheduler)
         with self.assertRaises(ValueError):
             manager.run()
