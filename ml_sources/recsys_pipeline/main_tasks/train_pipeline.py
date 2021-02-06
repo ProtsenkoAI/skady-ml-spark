@@ -8,10 +8,10 @@ class TrainPipelineManager:
 
         self.eval_results = []
 
-    def run(self):
+    def run(self, train_dataset):
         while self.scheduler.decide_continue_training(self.eval_results):
             train_kwargs = self.scheduler.get_train_kwargs()
-            self.trainer.fit(self.model_manager, **train_kwargs)
+            self.trainer.fit(self.model_manager, train_dataset, **train_kwargs)
             eval_res = self.validator.evaluate(self.model_manager)
             self.eval_results.append(eval_res)
 
