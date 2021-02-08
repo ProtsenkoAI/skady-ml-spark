@@ -1,6 +1,5 @@
 from .assistance import ModelAssistant
-from .data_processing import DataProcessor
-from .data_processing import IdIdxConv
+from .data_processing import DataProcessor, IdIdxConv, TensorCreator
 
 
 class AssistantBuilder:
@@ -12,6 +11,7 @@ class AssistantBuilder:
         model = self.base_model_class(**self.model_kwargs)
         user_conv = IdIdxConv()
         item_conv = IdIdxConv()
-        processor = DataProcessor(user_conv, item_conv)
+        tensor_creator = TensorCreator()
+        processor = DataProcessor(user_conv, item_conv, tensor_creator)
         assistant = ModelAssistant(model, processor)
         return assistant

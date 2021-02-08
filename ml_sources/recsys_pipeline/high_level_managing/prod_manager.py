@@ -14,14 +14,27 @@ class ProdManager:
             self.assistant = assistant_builder.build()
 
         self.interacts = None
+        self.saved_model_name = None
 
     def add_interacts(self, new_interacts):
-        new_inters_conved = self.assistant.update_and_convert(new_interacts)
-        self._update_interacts(new_inters_conved)
+        new_interacts = new_interacts.copy()
+        self.assistant.update_with_interacts(new_interacts)
+        self._update_interacts(new_interacts)
 
     def fit(self, nepochs=None, nsteps=None):
+        # TODO: hide all low-level things inside trainer and assistant, not prod_manager!
         dataloader = self.dataloader_builder.build(self.interacts)
         self.trainer.fit(self.assistant, dataloader, nsteps=nsteps, nepochs=nepochs)
+
+    def get_recommends(self, users):
+        recommends = self.recommender.recommend(self.assistant, users)
+        return recommends
+
+    def save(self):
+        self.saved_model_name = self.saver.save(self.assistant)
+
+    def load(self):
+        self.assistant = self.saver.load(self.saved_model_name)
 
     def _update_interacts(self, new_inters):
         if hasattr(self, "interacts"):

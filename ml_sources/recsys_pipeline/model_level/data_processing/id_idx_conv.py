@@ -1,3 +1,6 @@
+from collections import OrderedDict
+
+
 class IdIdxConv:
     def __init__(self, ids=None):
         self.idx2id = {}
@@ -8,13 +11,16 @@ class IdIdxConv:
 
     def get_idxs(self, *ids):
         idxs = [self.id2idx[int(id)] for id in ids]
-        if len(idxs) == 1:
-            return idxs[0]
         return idxs
+
+    def get_all_ids(self):
+        ordered_idx2id = OrderedDict(self.idx2id)
+        ids_sorted_by_idx = list(ordered_idx2id.values())
+        return ids_sorted_by_idx
 
     def count_unknown(self, *ids):
         count = 0
-        for obj_id in ids:
+        for obj_id in set(ids):
             if obj_id not in self.id2idx.keys():
                 count += 1
         return count
@@ -27,7 +33,7 @@ class IdIdxConv:
                 self.idx2id[idx] = obj_id
 
     def dump(self):
-        return [1, 2, 3]
+        return self.get_all_ids()
 
     @classmethod
     def load(cls, data):

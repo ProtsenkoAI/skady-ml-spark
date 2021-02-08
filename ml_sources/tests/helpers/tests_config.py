@@ -10,6 +10,7 @@ class TestsConfig:
         self.device = "cpu"
         self.user_colname = "user_id"
         self.item_colname = "anime_id"
+        self.labels_colname = "rating"
 
         self.data_path = (self.project_root / "data").absolute()
         self.interacts_path = str(self.data_path / "rating.csv")

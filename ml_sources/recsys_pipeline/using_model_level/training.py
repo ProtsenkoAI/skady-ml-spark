@@ -1,6 +1,0 @@
-class Trainer:
-    def __init__(self):
-        ...
-
-    def fit(self, assistant, dataset, nsteps=None, nepochs=None):
-        ...
