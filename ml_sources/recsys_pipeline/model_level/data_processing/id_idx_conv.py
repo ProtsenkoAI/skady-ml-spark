@@ -18,6 +18,10 @@ class IdIdxConv:
         ids_sorted_by_idx = list(ordered_idx2id.values())
         return ids_sorted_by_idx
 
+    def get_all_idxs(self):
+        idxs = sorted(self.idx2id.keys())
+        return idxs
+
     def count_unknown(self, *ids):
         count = 0
         for obj_id in set(ids):

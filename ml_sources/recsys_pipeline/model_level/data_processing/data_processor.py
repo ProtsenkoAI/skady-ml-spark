@@ -36,13 +36,11 @@ class DataProcessor:
 
     def count_unknown_users_items(self, interacts):
         users, items = self._get_users_items(interacts)
-        # print("users", users)
-        # print("ite")
         nb_unknown_users = self.user_conv.count_unknown(*users)
         nb_unknown_items = self.item_conv.count_unknown(*items)
         return nb_unknown_users, nb_unknown_items
 
-    def update_and_convert(self, interacts):
+    def update(self, interacts):
         interacts = interacts.copy()
         users, items = self._get_users_items(interacts)
         self.user_conv.add_ids(*users)

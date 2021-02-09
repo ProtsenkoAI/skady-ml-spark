@@ -4,10 +4,7 @@ class ModelAssistant:
         self.processor = processor
 
     def preproc_then_forward(self, features):
-       # print("src features", features)
         proc_features = self.processor.preprocess_features(features)
-        #print("proc features", proc_features)
-        #print("init_kwargs", self.model.get_init_kwargs())
         return self.model.forward(*proc_features)
 
     def preproc_labels(self, labels):
@@ -31,7 +28,7 @@ class ModelAssistant:
     def update_with_interacts(self, interacts):
         new_users_count, new_items_count = self.processor.count_unknown_users_items(interacts)
         self._scale_model_if_needed(new_users_count, new_items_count)
-        self.processor.update_with_interacts(interacts)
+        self.processor.update(interacts)
 
     def _scale_model_if_needed(self, max_user_idx, max_item_idx):
         model_kwargs = self.get_model_init_kwargs()

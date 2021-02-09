@@ -1,6 +1,3 @@
-# NOTE: at the moment tests are based at hardcoded trainer.get_dataset_len() -> 10, so when 'll write normal code
-# it can break here.
-
 import unittest
 import math
 
@@ -8,14 +5,16 @@ from recsys_pipeline.high_level_managing.train_pipeline import TrainPipelineMana
 from recsys_pipeline.high_level_managing.train_pipeline_scheduler import TrainPipelineScheduler
 from recsys_pipeline.model_level.assistance import ModelAssistant
 from ..helpers.objs_pool import ObjsPool
+from ..helpers import std_objects
 objs_pool = ObjsPool()
 
 
 class TestTrainPipelineManager(unittest.TestCase):
     def test_model_saving_loading(self):
         manager = objs_pool.train_pipeline_manager
-        dataloader = objs_pool.train_dataloader
-        eval_res = manager.run(dataloader)
+        train_loader = objs_pool.train_dataloader
+        eval_interacts = std_objects.get_interacts()
+        eval_res = manager.run(train_loader, eval_interacts)
         loaded_assistant = manager.load_best()
         self.assertIsInstance(loaded_assistant, ModelAssistant)
 
@@ -28,7 +27,8 @@ class TestTrainPipelineManager(unittest.TestCase):
                                        objs_pool.validator, objs_pool.standard_saver,
                                        scheduler)
 
-        eval_res = manager.run(objs_pool.train_dataloader)
+        eval_interacts = std_objects.get_interacts()
+        eval_res = manager.run(objs_pool.train_dataloader, eval_interacts)
         epochs_in_max_steps = math.ceil(max_steps / steps_in_epoch)
         self.assertEqual(len(eval_res), epochs_in_max_steps)
 
@@ -41,7 +41,8 @@ class TestTrainPipelineManager(unittest.TestCase):
         manager = TrainPipelineManager(objs_pool.assistant, trainer,
                                        objs_pool.validator, objs_pool.standard_saver, scheduler)
 
-        eval_res = manager.run(objs_pool.train_dataloader)
+        eval_interacts = std_objects.get_interacts()
+        eval_res = manager.run(objs_pool.train_dataloader, eval_interacts)
         self.assertEqual(len(eval_res), 2)
 
     def test_eval_every_epoch_break_because_of_epochs(self):
@@ -52,7 +53,8 @@ class TestTrainPipelineManager(unittest.TestCase):
                                        objs_pool.validator, objs_pool.standard_saver,
                                        scheduler)
 
-        eval_res = manager.run(objs_pool.train_dataloader)
+        eval_interacts = std_objects.get_interacts()
+        eval_res = manager.run(objs_pool.train_dataloader, eval_interacts)
         self.assertEqual(len(eval_res), 5)
 
     def test_eval_every_nsteps_break_because_of_epochs(self):
@@ -64,7 +66,8 @@ class TestTrainPipelineManager(unittest.TestCase):
         manager = TrainPipelineManager(objs_pool.assistant, trainer,
                                        objs_pool.validator, objs_pool.standard_saver, scheduler)
 
-        eval_res = manager.run(objs_pool.train_dataloader)
+        eval_interacts = std_objects.get_interacts()
+        eval_res = manager.run(objs_pool.train_dataloader, eval_interacts)
         self.assertTrue(len(eval_res), max_epochs)
 
     def test_exceed_stopping_patience(self):
@@ -78,7 +81,8 @@ class TestTrainPipelineManager(unittest.TestCase):
         manager = TrainPipelineManager(objs_pool.assistant, trainer,
                                        objs_pool.validator, objs_pool.standard_saver, scheduler)
 
-        eval_res = manager.run(objs_pool.train_dataloader)
+        eval_interacts = std_objects.get_interacts()
+        eval_res = manager.run(objs_pool.train_dataloader, eval_interacts)
         pass
 
     def test_raises_error_if_eval_strategy_steps_but_no_nsteps_provided(self):
@@ -88,5 +92,6 @@ class TestTrainPipelineManager(unittest.TestCase):
         scheduler = TrainPipelineScheduler(steps_in_epoch, eval_strategy="steps")
         manager = TrainPipelineManager(objs_pool.assistant, trainer,
                                        objs_pool.validator, objs_pool.standard_saver, scheduler)
+        eval_interacts = std_objects.get_interacts()
         with self.assertRaises(ValueError):
-            manager.run(train_dataset)
+            eval_res = manager.run(objs_pool.train_dataloader, eval_interacts)

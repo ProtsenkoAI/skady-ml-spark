@@ -14,6 +14,7 @@ class ObjsPool:
         self.trainer = std_objects.get_trainer()
         self.validator = std_objects.get_validator()
         self.train_dataloader = std_objects.get_dataloader()
+        self.eval_dataloader = std_objects.get_dataloader(batch_size=16)
         self.loader_builder = std_objects.get_dataloader_builder()
 
         self.standard_saver = std_objects.get_standard_saver()
