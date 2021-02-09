@@ -13,6 +13,10 @@ class IdIdxConv:
         idxs = [self.id2idx[int(id)] for id in ids]
         return idxs
 
+    def get_ids(self, *idxs):
+        ids = [self.idx2id[int(idx)] for idx in idxs]
+        return ids
+
     def get_all_ids(self):
         ordered_idx2id = OrderedDict(self.idx2id)
         ids_sorted_by_idx = list(ordered_idx2id.values())

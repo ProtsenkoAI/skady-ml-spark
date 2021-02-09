@@ -7,6 +7,12 @@ class ModelAssistant:
         proc_features = self.processor.preprocess_features(features)
         return self.model.forward(*proc_features)
 
+    def reverse_convert_items(self, items):
+        return self.processor.reverse_convert_items(*items)
+
+    def convert_items(self, items):
+        return self.processor.convert_items(*items)
+
     def preproc_labels(self, labels):
         return self.processor.preprocess_labels(labels)
 
