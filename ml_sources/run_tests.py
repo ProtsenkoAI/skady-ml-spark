@@ -1,5 +1,7 @@
 import unittest
 import shutil
+import os
+
 from tests.helpers import tests_config
 
 
@@ -21,6 +23,8 @@ def delete_saved_results():
 
 
 config = tests_config.TestsConfig()
+# starting from dir with this file
+this_file_dir = os.path.dirname(os.path.abspath(__file__))
+run_tests(start_dir=this_file_dir)
 
-run_tests(start_dir="./")
 delete_saved_results()
