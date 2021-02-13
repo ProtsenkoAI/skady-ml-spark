@@ -1,8 +1,9 @@
 import unittest
 import os
 
-from recsys_pipeline.model_level.assistance import ModelAssistant
-from recsys_pipeline.saving.standard_saver import StandardSaver
+from model_level.assistance import ModelAssistant
+from saving.savers import StandardSaver
+from saving.storages import LocalModelStorage
 from ..helpers.objs_pool import ObjsPool
 from ..helpers import std_objects, tests_config
 objs_pool = ObjsPool()
@@ -18,7 +19,8 @@ class TestStandardSaver(unittest.TestCase):
         some_interacts = std_objects.get_interacts(30)
         assistant.update_with_interacts(some_interacts)
 
-        saver = StandardSaver(self.std_save_dir)
+        storage = LocalModelStorage(self.std_save_dir)
+        saver = StandardSaver(storage)
         model_name = saver.save(assistant)
         loaded_assist = saver.load(model_name)
         self.assertIsInstance(loaded_assist, ModelAssistant)
@@ -30,7 +32,8 @@ class TestStandardSaver(unittest.TestCase):
             self._assert_equal_conv_ids(old_converter, new_converter)
 
     def test_multiple_models_loading(self):
-        saver = StandardSaver(self.std_save_dir)
+        storage = LocalModelStorage(self.std_save_dir)
+        saver = StandardSaver(storage)
         processor1 = std_objects.get_processor()
         model1 = std_objects.get_model(2, 2, 2)
         assistant1 = ModelAssistant(model1, processor1)

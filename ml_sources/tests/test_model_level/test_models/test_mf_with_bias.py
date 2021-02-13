@@ -1,7 +1,7 @@
 import unittest
 import torch
 
-from recsys_pipeline.model_level.models.mf_with_bias import MFWithBiasModel
+from model_level.models.mf_with_bias import MFWithBiasModel
 from ...helpers.objs_pool import ObjsPool
 from ...helpers import std_objects
 objs_pool = ObjsPool()

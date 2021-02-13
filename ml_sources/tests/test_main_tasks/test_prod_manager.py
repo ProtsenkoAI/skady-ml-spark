@@ -1,8 +1,8 @@
 import unittest
 
-from recsys_pipeline.high_level_managing.prod_manager import ProdManager
-from recsys_pipeline.model_level.assistant_builders import AssistantBuilder
-from recsys_pipeline.model_level.models.mf_with_bias import MFWithBiasModel
+from high_level_managing.prod_manager import ProdManager
+from model_level.assistant_builders import AssistantBuilder
+from model_level.models.mf_with_bias import MFWithBiasModel
 from ..helpers import std_objects
 from ..helpers.objs_pool import ObjsPool
 from ..helpers.tests_config import TestsConfig

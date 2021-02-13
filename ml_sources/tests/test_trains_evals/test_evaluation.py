@@ -1,6 +1,6 @@
 import unittest
 
-from recsys_pipeline.trains_evals.evaluation import Validator
+from trains_evals.evaluation import Validator
 from ..helpers.objs_pool import ObjsPool
 from ..helpers import std_objects, tests_config
 objs_pool = ObjsPool()

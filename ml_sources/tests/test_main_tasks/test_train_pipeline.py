@@ -1,9 +1,9 @@
 import unittest
 import math
 
-from recsys_pipeline.high_level_managing.train_pipeline import TrainPipelineManager
-from recsys_pipeline.high_level_managing.train_pipeline_scheduler import TrainPipelineScheduler
-from recsys_pipeline.model_level.assistance import ModelAssistant
+from high_level_managing.train_pipeline import TrainPipelineManager
+from high_level_managing.train_pipeline_scheduler import TrainPipelineScheduler
+from model_level.assistance import ModelAssistant
 from ..helpers.objs_pool import ObjsPool
 from ..helpers import std_objects
 objs_pool = ObjsPool()

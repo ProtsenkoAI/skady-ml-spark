@@ -1,5 +1,5 @@
 from ..helpers import std_objects
-from recsys_pipeline.high_level_managing.train_pipeline import TrainPipelineManager
+from high_level_managing.train_pipeline import TrainPipelineManager
 
 
 class ObjsPool:

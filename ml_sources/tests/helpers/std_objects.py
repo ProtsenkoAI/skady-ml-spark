@@ -2,16 +2,17 @@
 import pandas as pd
 from torch.utils import data as torch_data
 
-from recsys_pipeline.saving import StandardSaver
-from recsys_pipeline.model_level.assistance import ModelAssistant
-from recsys_pipeline.model_level.models import MFWithBiasModel
-from recsys_pipeline.model_level.data_processing import DataProcessor, IdIdxConv, TensorCreator
-from recsys_pipeline.data.building_loaders import StandardLoaderBuilder, UserItemsLoaderBuilder
-from recsys_pipeline.data.datasets import InteractDataset
-from recsys_pipeline.model_level.recommender import Recommender
-from recsys_pipeline.trains_evals.training import Trainer
-from recsys_pipeline.trains_evals.evaluation import Validator
-from recsys_pipeline.high_level_managing.train_pipeline_scheduler import TrainPipelineScheduler
+from saving.savers import StandardSaver
+from saving.storages import LocalModelStorage
+from model_level.assistance import ModelAssistant
+from model_level.models import MFWithBiasModel
+from model_level.data_processing import DataProcessor, IdIdxConv, TensorCreator
+from data.building_loaders import StandardLoaderBuilder, UserItemsLoaderBuilder
+from data.datasets import InteractDataset
+from model_level.recommender import Recommender
+from trains_evals.training import Trainer
+from trains_evals.evaluation import Validator
+from high_level_managing.train_pipeline_scheduler import TrainPipelineScheduler
 
 from ..helpers import tests_config
 config = tests_config.TestsConfig()
@@ -36,7 +37,8 @@ def get_assistant(nusers=5, nitems=5, hidden=5):
 
 
 def get_standard_saver():
-    return StandardSaver(save_dir=config.save_dir)
+    save_storage = LocalModelStorage(save_dir=config.save_dir)
+    return StandardSaver(save_storage)
 
 
 def get_trainer():

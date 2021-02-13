@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from recsys_pipeline.model_level.data_processing.id_idx_conv import IdIdxConv
+from model_level.data_processing.id_idx_conv import IdIdxConv
 from ...helpers.objs_pool import ObjsPool
 from ...helpers import std_objects, tests_config
 objs_pool = ObjsPool()
