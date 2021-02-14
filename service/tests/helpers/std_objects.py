@@ -2,7 +2,7 @@ import pandas as pd
 from torch.utils import data as torch_data
 
 from saving.savers import StandardSaver
-from ml_back_communication.storages import LocalModelStorage
+from storages import LocalModelStorage
 from model_level.assistance import ModelAssistant
 from model_level.models import MFWithBiasModel
 from model_level.data_processing import get_standard_processor

@@ -5,3 +5,4 @@
 **/*.pyc
 tmp_results/
 venv/
+vk_config*.json

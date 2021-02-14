@@ -4,7 +4,7 @@ import os
 from model_level import data_processing
 from model_level.assistance import ModelAssistant
 from saving.savers import StandardSaver
-from ml_back_communication.storages import LocalModelStorage
+from storages import LocalModelStorage
 from helpers import tests_config, std_objects
 
 config = tests_config.TestsConfig()
