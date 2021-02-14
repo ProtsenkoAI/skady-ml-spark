@@ -56,14 +56,16 @@ class TestDataProcessing(unittest.TestCase):
         self.assertIsInstance(user_conv, IdIdxConv)
         self.assertIsInstance(item_conv, IdIdxConv)
 
-    def test_count_unknowns(self):
+    def test_get_max_idxs(self):
         processor = std_objects.get_processor()
         interacts = std_objects.get_interacts(20)
-        nusers, nitems = processor.count_unknown_users_items(interacts)
+        processor.update(interacts)
+        nusers, nitems = processor.get_max_user_item_idxs()
         self.assertGreater(nusers, 0)
         self.assertGreater(nitems, 0)
 
         lot_of_interacts = std_objects.get_interacts(100)
-        new_nusers, new_nitems = processor.count_unknown_users_items(lot_of_interacts)
+        processor.update(lot_of_interacts)
+        new_nusers, new_nitems = processor.get_max_user_item_idxs()
         self.assertGreaterEqual(new_nusers, nusers)
         self.assertGreaterEqual(new_nitems, nitems)

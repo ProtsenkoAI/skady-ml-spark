@@ -28,7 +28,6 @@ class DataProcessor:
     def reverse_convert_items(self, *items):
         return self.item_conv.get_ids(*items)
 
-
     def preprocess_labels(self, labels):
         return self.tensor_creator.get_labels_tensor(labels)
 
@@ -45,19 +44,24 @@ class DataProcessor:
     def get_item_conv(self):
         return self.item_conv
 
-    def count_unknown_users_items(self, interacts):
-        users, items = self._get_users_items(interacts)
-        nb_unknown_users = self.user_conv.count_unknown(*users)
-        nb_unknown_items = self.item_conv.count_unknown(*items)
-        return nb_unknown_users, nb_unknown_items
+    def get_max_user_item_idxs(self):
+        users = self.user_conv.get_all_idxs()
+        items = self.item_conv.get_all_idxs()
+        if len(users):
+            max_user_idx = max(self.user_conv.get_all_idxs()) + 1
+        else:
+            max_user_idx = 0
+        if len(items):
+            max_item_idx = max(self.item_conv.get_all_idxs()) + 1
+        else:
+            max_item_idx = 0
+        return max_user_idx, max_item_idx
 
     def update(self, interacts):
         interacts = interacts.copy()
         users, items = self._get_users_items(interacts)
         self.user_conv.add_ids(*users)
         self.item_conv.add_ids(*items)
-        interacts[self.user_colname] = self._convert_users(users)
-        interacts[self.item_colname] = self._convert_items(items)
 
     def _convert_users(self, users):
         return self.user_conv.get_idxs(*users)

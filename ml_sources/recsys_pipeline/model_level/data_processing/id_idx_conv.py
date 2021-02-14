@@ -35,7 +35,7 @@ class IdIdxConv:
 
     def add_ids(self, *ids):
         for obj_id in ids:
-            if obj_id not in self.id2idx:
+            if obj_id not in self.id2idx.keys():
                 idx = self._get_next_idx()
                 self.id2idx[obj_id] = idx
                 self.idx2id[idx] = obj_id

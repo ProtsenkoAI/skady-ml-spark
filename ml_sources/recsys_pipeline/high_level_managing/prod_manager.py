@@ -27,7 +27,7 @@ class ProdManager:
         self.trainer.fit(self.assistant, dataloader, nsteps=nsteps, nepochs=nepochs)
 
     def get_recommends(self, users):
-        recommends = self.recommender.recommend(self.assistant, users)
+        recommends = self.recommender.get_recommends(users, self.assistant)
         return recommends
 
     def save(self):

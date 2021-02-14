@@ -46,9 +46,8 @@ class TestModelAssistant(unittest.TestCase):
 
     def test_update_and_convert(self):
         assistant = std_objects.get_assistant(0, 0, 0)
-        old_nb_users = len(assistant.get_all_items())
         old_init_kwargs = assistant.get_model_init_kwargs()
-        self.assertEqual(old_nb_users, 0)
+        self.assertEqual(old_init_kwargs["nusers"], 0)
 
         interacts = std_objects.get_interacts(100)
         uniq_items = interacts[self.item_colname].unique()
@@ -57,6 +56,7 @@ class TestModelAssistant(unittest.TestCase):
         new_nb_users = len(assistant.get_all_items())
         new_init_kwargs = assistant.get_model_init_kwargs()
         self.assertEqual(new_nb_users, len(uniq_items))
+
         for init_kwarg_name in ["nusers", "nitems"]:
             old_val = old_init_kwargs[init_kwarg_name]
             new_val = new_init_kwargs[init_kwarg_name]
@@ -79,3 +79,15 @@ class TestModelAssistant(unittest.TestCase):
         convs = assistant.get_convs()
         for cnv in convs:
             self.assertIsInstance(cnv, IdIdxConv)
+
+    def test_update_then_predict(self):
+        assistant = std_objects.get_assistant(nusers=1)
+        old_interacts = std_objects.get_interacts(20)
+        assistant.update_with_interacts(old_interacts)
+
+        interacts = std_objects.get_interacts(200)
+        assistant.update_with_interacts(interacts)
+
+        dataloader = std_objects.get_dataloader(interacts=interacts)
+        for features, labels in dataloader:
+            assistant.preproc_then_forward(features)

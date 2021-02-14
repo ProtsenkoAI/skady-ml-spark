@@ -32,8 +32,9 @@ class ModelAssistant:
         return user_conv, item_conv
 
     def update_with_interacts(self, interacts):
-        new_users_count, new_items_count = self.processor.count_unknown_users_items(interacts)
-        self._scale_model_if_needed(new_users_count, new_items_count)
+        self.processor.update(interacts)
+        max_user_idx, max_item_idx = self.processor.get_max_user_item_idxs()
+        self._scale_model_if_needed(max_user_idx, max_item_idx)
         self.processor.update(interacts)
 
     def _scale_model_if_needed(self, max_user_idx, max_item_idx):
