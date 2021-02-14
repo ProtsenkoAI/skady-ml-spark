@@ -2,9 +2,7 @@ import unittest
 from torch.utils import data as torch_data
 
 from data.building_loaders import StandardLoaderBuilder
-from ..helpers.objs_pool import ObjsPool
 from ..helpers import std_objects, tests_config
-objs_pool = ObjsPool()
 config = tests_config.TestsConfig()
 
 

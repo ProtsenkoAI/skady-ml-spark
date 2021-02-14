@@ -33,7 +33,7 @@ class ModelAssistant:
 
     def update_with_interacts(self, interacts):
         self.processor.update(interacts)
-        max_user_idx, max_item_idx = self.processor.get_max_user_item_idxs()
+        max_user_idx, max_item_idx = self.processor.get_nusers_nitems()
         self._scale_model_if_needed(max_user_idx, max_item_idx)
         self.processor.update(interacts)
 

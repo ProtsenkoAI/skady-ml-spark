@@ -4,9 +4,9 @@ from high_level_managing.prod_manager import ProdManager
 from model_level.assistant_builders import AssistantBuilder
 from model_level.models.mf_with_bias import MFWithBiasModel
 from ..helpers import std_objects
-from ..helpers.objs_pool import ObjsPool
+
 from ..helpers.tests_config import TestsConfig
-objs_pool = ObjsPool()
+
 config = TestsConfig()
 
 
@@ -46,9 +46,9 @@ class TestTrainProdManager(unittest.TestCase):
 
     def test_build_new_assistant(self):
         assist_builder = AssistantBuilder(MFWithBiasModel, nusers=10, nitems=10, hidden_size=5)
-        prod_manager = ProdManager(objs_pool.trainer, objs_pool.recommender, objs_pool.standard_saver, "model_example",
-                                   assistant_builder=assist_builder, dataloader_builder=objs_pool.loader_builder,
-                                   try_to_load=False)
+        prod_manager = ProdManager( std_objects.get_trainer(), std_objects.get_recommender(),
+                                    std_objects.get_standard_saver(), "model_example",
+                                   assistant_builder=assist_builder, try_to_load=False)
         pass
 
     def test_update_with_new_users_get_recommends_for_them(self):
@@ -65,8 +65,8 @@ class TestTrainProdManager(unittest.TestCase):
 
     def _create_standard_manager(self, nusers=2):
         assist_builder = AssistantBuilder(MFWithBiasModel, nusers=nusers, nitems=10, hidden_size=5)
-        prod_manager = ProdManager(objs_pool.trainer, objs_pool.recommender, objs_pool.standard_saver, "model_example",
-                                   assistant_builder=assist_builder, dataloader_builder=objs_pool.loader_builder)
+        prod_manager = ProdManager(std_objects.get_trainer(), std_objects.get_recommender(),  std_objects.get_standard_saver(),
+                                   "model_example", assistant_builder=assist_builder)
         return prod_manager
 
     def _validate_recommends_format(self, recommends, nb_users):

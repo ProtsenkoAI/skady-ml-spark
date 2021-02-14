@@ -2,9 +2,7 @@ import unittest
 import torch
 
 from model_level.data_processing.tensor_creation import TensorCreator
-from ...helpers.objs_pool import ObjsPool
 from ...helpers import std_objects, tests_config
-objs_pool = ObjsPool()
 config = tests_config.TestsConfig()
 
 

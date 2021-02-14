@@ -9,9 +9,10 @@ class Trainer:
         self.criterion = nn.MSELoss()
 
     def fit(self, assistant, dataset, nsteps=None, nepochs=None):
+        loader = self.loader_builder.build(dataset)
         optimizer = self._create_optimizer(assistant)
-        steps_left = self._get_steps_left(nsteps, nepochs, dataset)
-        batches_generator = self._create_batch_generator(dataset, steps_left)
+        steps_left = self._get_steps_left(nsteps, nepochs, loader)
+        batches_generator = self._create_batch_generator(loader, steps_left)
         for batch in batches_generator:
             self._train_one_step(batch, assistant, optimizer)
 
@@ -25,7 +26,6 @@ class Trainer:
         # print("features", features)
         preds = assistant.preproc_then_forward(features)
         labels_proc = assistant.preproc_labels(labels)
-        #print("preds", preds, "labels", labels_proc)
         return self.criterion(preds.squeeze(), labels_proc)
 
     def _optimize_weights(self, loss, optimizer):

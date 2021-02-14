@@ -1,12 +1,11 @@
 import unittest
 import os
 
+from model_level import data_processing
 from model_level.assistance import ModelAssistant
 from saving.savers import StandardSaver
 from saving.storages import LocalModelStorage
-from ..helpers.objs_pool import ObjsPool
 from ..helpers import std_objects, tests_config
-objs_pool = ObjsPool()
 config = tests_config.TestsConfig()
 
 
@@ -15,7 +14,7 @@ class TestStandardSaver(unittest.TestCase):
         self.std_save_dir = config.save_dir
 
     def test_simple_model_save_load(self):
-        assistant = objs_pool.assistant
+        assistant = std_objects.get_assistant()
         some_interacts = std_objects.get_interacts(30)
         assistant.update_with_interacts(some_interacts)
 
@@ -34,12 +33,12 @@ class TestStandardSaver(unittest.TestCase):
     def test_multiple_models_loading(self):
         storage = LocalModelStorage(self.std_save_dir)
         saver = StandardSaver(storage)
-        processor1 = std_objects.get_processor()
+        processor1 = data_processing.get_standard_processor()
         model1 = std_objects.get_model(2, 2, 2)
         assistant1 = ModelAssistant(model1, processor1)
 
         model2 = std_objects.get_model(5, 5, 5)
-        processor2 = std_objects.get_processor()
+        processor2 = data_processing.get_standard_processor()
         assistant2 = ModelAssistant(model2, processor2)
 
         model1_name = saver.save(assistant1)

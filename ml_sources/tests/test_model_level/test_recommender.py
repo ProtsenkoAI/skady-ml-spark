@@ -1,9 +1,7 @@
 import unittest
 
 from model_level.recommender import Recommender
-from ..helpers.objs_pool import ObjsPool
 from ..helpers import std_objects, tests_config
-objs_pool = ObjsPool()
 config = tests_config.TestsConfig()
 
 

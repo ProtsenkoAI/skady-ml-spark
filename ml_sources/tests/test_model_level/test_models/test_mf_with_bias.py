@@ -1,10 +1,9 @@
 import unittest
 import torch
 
+from model_level import data_processing
 from model_level.models.mf_with_bias import MFWithBiasModel
-from ...helpers.objs_pool import ObjsPool
 from ...helpers import std_objects
-objs_pool = ObjsPool()
 
 
 class TestMFWithBias(unittest.TestCase):
@@ -14,7 +13,7 @@ class TestMFWithBias(unittest.TestCase):
 
         interacts = std_objects.get_interacts()
         loader = std_objects.get_dataloader(batch_size, interacts)
-        preprocessor = std_objects.get_processor()
+        preprocessor = data_processing.get_standard_processor()
         preprocessor.update(interacts)
 
         features, labels = next(iter(loader))

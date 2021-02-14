@@ -44,18 +44,10 @@ class DataProcessor:
     def get_item_conv(self):
         return self.item_conv
 
-    def get_max_user_item_idxs(self):
+    def get_nusers_nitems(self):
         users = self.user_conv.get_all_idxs()
         items = self.item_conv.get_all_idxs()
-        if len(users):
-            max_user_idx = max(self.user_conv.get_all_idxs()) + 1
-        else:
-            max_user_idx = 0
-        if len(items):
-            max_item_idx = max(self.item_conv.get_all_idxs()) + 1
-        else:
-            max_item_idx = 0
-        return max_user_idx, max_item_idx
+        return len(users), len(items)
 
     def update(self, interacts):
         interacts = interacts.copy()

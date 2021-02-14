@@ -3,9 +3,9 @@ import torch
 from torch import nn
 
 from model_level.data_processing.id_idx_conv import IdIdxConv
-from ..helpers.objs_pool import ObjsPool
+
 from ..helpers import std_objects, tests_config
-objs_pool = ObjsPool()
+
 config = tests_config.TestsConfig()
 
 
@@ -14,11 +14,11 @@ class TestModelAssistant(unittest.TestCase):
         self.item_colname = config.item_colname
 
     def test_preproc_then_forward(self):
-        assistant = objs_pool.assistant
+        assistant =  std_objects.get_assistant()
         interacts = std_objects.get_interacts()
         assistant.update_with_interacts(interacts)
 
-        dataloader = objs_pool.train_dataloader
+        dataloader =  std_objects.get_dataloader()
         batch = next(iter(dataloader))
         features, labels = batch
 
@@ -27,7 +27,7 @@ class TestModelAssistant(unittest.TestCase):
         self.assertIsInstance(preds, torch.Tensor)
 
     def test_preproc_labels(self):
-        assistant = objs_pool.assistant
+        assistant =  std_objects.get_assistant()
         interacts = std_objects.get_interacts()
         assistant.update_with_interacts(interacts)
 
@@ -38,7 +38,7 @@ class TestModelAssistant(unittest.TestCase):
         self.assertIsInstance(labels_proc, torch.Tensor)
 
     def test_get_all_items(self):
-        assistant = objs_pool.assistant
+        assistant =  std_objects.get_assistant()
         interacts = std_objects.get_interacts()
         assistant.update_with_interacts(interacts)
         all_items = assistant.get_all_items()
