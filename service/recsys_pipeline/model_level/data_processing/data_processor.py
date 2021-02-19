@@ -38,6 +38,11 @@ class DataProcessor:
             users, items = features
         return users, items
 
+    def get_convs_data(self):
+        users_data = self.get_user_conv().dump()
+        items_data = self.get_item_conv().dump()
+        return users_data, items_data
+
     def get_user_conv(self):
         return self.user_conv
 
@@ -54,6 +59,9 @@ class DataProcessor:
         users, items = self._get_users_items(interacts)
         self.user_conv.add_ids(*users)
         self.item_conv.add_ids(*items)
+
+    def postproc_preds(self, preds):
+        return list(preds.squeeze(1).cpu().detach().numpy())
 
     def _convert_users(self, users):
         return self.user_conv.get_idxs(*users)

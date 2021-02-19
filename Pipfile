@@ -12,6 +12,7 @@ sklearn = "*"
 matplotlib = "*"
 vk-api = "*"
 fastapi = "*"
+pymongo = "*"
+tqdm = "*"
 
 [dev-packages]
-

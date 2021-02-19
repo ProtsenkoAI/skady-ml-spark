@@ -9,10 +9,9 @@ from model_level.data_processing import get_standard_processor
 from data.building_loaders import StandardLoaderBuilder, UserItemsLoaderBuilder
 from data.datasets import InteractDataset
 from model_level.recommender import Recommender
-from trains_evals.training import Trainer
-from trains_evals.evaluation import Validator
-from high_level_managing.train_pipeline_scheduler import TrainPipelineScheduler
-from high_level_managing.train_pipeline import TrainPipelineManager
+from train_eval.training import SimpleTrainer
+from train_eval.evaluation import Validator
+from train_eval.training.trainer_with_eval import EvalTrainer
 
 from helpers import tests_config
 
@@ -34,9 +33,9 @@ def get_standard_saver():
     return StandardSaver(save_storage)
 
 
-def get_trainer(batch_size=8):
-    loader_builder = get_dataloader_builder(batch_size)
-    return Trainer(loader_builder)
+def get_simple_trainer():
+    loader_builder = get_dataloader_builder(batch_size=6)
+    return SimpleTrainer(loader_builder)
 
 
 def get_validator():
@@ -69,7 +68,6 @@ def get_dataloader_builder(batch_size=8):
     return StandardLoaderBuilder(batch_size)
 
 
-def get_train_pipeline_manager():
-    assistant = get_assistant()
-    return TrainPipelineManager(assistant, get_trainer(), get_validator(),
-                                get_standard_saver(), get_train_scheduler())
+def get_eval_trainer(**eval_trainer_kwargs):
+    return EvalTrainer(get_validator(), get_dataloader_builder(),
+                       get_standard_saver(), **eval_trainer_kwargs)

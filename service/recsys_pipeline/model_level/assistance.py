@@ -3,33 +3,20 @@ class ModelAssistant:
         self.model = model
         self.processor = processor
 
-    def preproc_then_forward(self, features):
+    def preproc_forward(self, features, labels=None):
         proc_features = self.processor.preprocess_features(features)
-        return self.model.forward(*proc_features)
+        preds = self.model.forward(*proc_features)
+        if not labels is None:
+            proc_labels = self.processor.preprocess_labels(labels)
+            return preds, proc_labels
+        return preds
 
-    def reverse_convert_items(self, items):
-        return self.processor.reverse_convert_items(*items)
+    def preproc_forward_postproc(self, features):
+        preds = self.preproc_forward(features)
+        return self.processor.postproc_preds(preds)
 
-    def convert_items(self, items):
-        return self.processor.convert_items(*items)
-
-    def preproc_labels(self, labels):
-        return self.processor.preprocess_labels(labels)
-
-    def get_model(self):
-        return self.model
-
-    def get_all_items(self):
-        conv = self.processor.get_item_conv()
-        return conv.get_all_ids()
-
-    def get_model_init_kwargs(self):
-        return self.model.get_init_kwargs()
-
-    def get_convs(self):
-        user_conv = self.processor.get_user_conv()
-        item_conv = self.processor.get_item_conv()
-        return user_conv, item_conv
+    def postproc_ids(self, ids):
+        raise NotImplementedError
 
     def update_with_interacts(self, interacts):
         self.processor.update(interacts)
@@ -37,8 +24,25 @@ class ModelAssistant:
         self._scale_model_if_needed(max_user_idx, max_item_idx)
         self.processor.update(interacts)
 
+    def save(self, saver):
+        name = saver.save(self.model, self.processor)
+        return name
+
+    @classmethod
+    def from_save(cls, saver, name):
+        model, processor = saver.load(name)
+        return cls(model, processor)
+
+    def get_model(self):
+        return self.model
+
+    def get_all_items(self):
+        # TODO: remove this method
+        conv = self.processor.get_item_conv()
+        return conv.get_all_ids()
+
     def _scale_model_if_needed(self, max_user_idx, max_item_idx):
-        model_kwargs = self.get_model_init_kwargs()
+        model_kwargs = self.model.get_init_kwargs()
         nusers, nitems = model_kwargs["nusers"], model_kwargs["nitems"]
         new_users_needed = max(max_user_idx - nusers, 0)
         new_items_needed = max(max_item_idx - nitems, 0)

@@ -20,6 +20,7 @@ class LocalModelStorage:
         del meta[model_name]
         weights_path = self._get_weights_path(model_name)
         os.remove(weights_path)
+        self._save_meta(meta)
 
     def save_weights_and_meta(self, model_weights: dict, model_meta: dict):
         all_model_meta = self._load_meta()

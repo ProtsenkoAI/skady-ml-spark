@@ -1,6 +1,6 @@
 import unittest
 
-from trains_evals.evaluation import Validator
+from train_eval.evaluation import Validator
 from helpers import tests_config, std_objects
 
 config = tests_config.TestsConfig()

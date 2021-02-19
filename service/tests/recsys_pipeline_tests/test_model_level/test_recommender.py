@@ -35,4 +35,4 @@ class TestRecommender(unittest.TestCase):
         recommender = std_objects.get_recommender()
         user_items_scores = recommender.score_all_items(user, assistant)
         self.assertEqual(len(user_items_scores), len(assistant.get_all_items()))
-        self.assertIsInstance(user_items_scores, list)
+        self.assertIsInstance(user_items_scores, dict)

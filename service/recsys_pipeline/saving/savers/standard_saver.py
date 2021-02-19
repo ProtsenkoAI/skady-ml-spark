@@ -16,20 +16,18 @@ class StandardSaver:
     def check_model_exists(self, model_name):
         return self.model_storage.check_model_exists(model_name)
 
-    def save(self, model_manager):
-        model_meta = self._get_model_meta(model_manager)
-        model_weights = model_manager.get_model().state_dict()
+    def save(self, model, processor):
+        model_meta = self._get_model_meta(model, processor)
+        model_weights = model.state_dict()
         model_name = self.model_storage.save_weights_and_meta(model_weights, model_meta)
 
         return model_name
 
-    def _get_model_meta(self, model_manager):
-        user_conv, item_conv = model_manager.get_convs()
-        saved_user_conv_data = user_conv.dump()
-        saved_item_conv_data = item_conv.dump()
-        model_init_kwargs = model_manager.get_model_init_kwargs()
-        model_meta = {"model_init_kwargs": model_init_kwargs, "user_conv": saved_user_conv_data,
-                            "item_conv": saved_item_conv_data}
+    def _get_model_meta(self, model, processor):
+        user_conv_data, item_conv_data = processor.get_convs_data()
+        model_init_kwargs = model.get_init_kwargs()
+        model_meta = {"model_init_kwargs": model_init_kwargs, "user_conv": user_conv_data,
+                            "item_conv": item_conv_data}
         return model_meta
 
     def load(self, model_name):
@@ -42,5 +40,4 @@ class StandardSaver:
         item_conv = IdIdxConv.load(item_conv_data)
 
         processor = DataProcessor(user_conv, item_conv, self.tensor_creator)
-        assistant = ModelAssistant(model, processor)
-        return assistant
+        return model, processor
