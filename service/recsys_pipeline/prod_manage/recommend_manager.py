@@ -13,6 +13,7 @@ class RecommendManager:
 
         self.interacts = None
         self.model_name = None
+        self.item_colname = "anime_id"
 
     def fit(self, new_interacts):
         self._add_interacts(new_interacts)
@@ -26,8 +27,12 @@ class RecommendManager:
         self._update_interacts(new_interacts)
 
     def get_recommends(self, users):
-        recommends = self.recommender.get_recommends(users, self.assistant)
+        all_items = self._get_all_items()
+        recommends = self.recommender.get_recommends(users, self.assistant, all_items)
         return recommends
+
+    def _get_all_items(self):
+        return self.interacts[self.item_colname].unique()
 
     def _save(self):
         model_name = self.assistant.save(self.saver)

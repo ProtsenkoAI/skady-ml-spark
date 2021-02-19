@@ -22,8 +22,6 @@ class EvalTrainer:
         self.weights_updater.prepare_for_fit(assistant)
         train_interacts, val_interacts = self._split_train_test(interacts)
         train_loader = self.loader_builder.build(train_interacts)
-        # TODO: problem. Evaluator can't work with loaders - it uses only interacts and creates loader inside
-        # val_loader = self.loader_builder.build(test_interacts)
 
         step_cnt = 0
         epoch_cnt = 0

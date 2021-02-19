@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 
 from train_eval.evaluation import Validator
 from helpers import tests_config, std_objects
@@ -14,7 +15,7 @@ class TestValidator(unittest.TestCase):
         validator = std_objects.get_validator()
         with self.assertWarns(UserWarning):
             eval_res = validator.evaluate(assistant, interacts)
-        self.assertTrue(eval_res is None)  # can't calc ndcg of one user
+        self.assertTrue(np.isnan(eval_res))  # can't calc ndcg of one user
 
     def test_evaluate_one_user_one_item_with_rmse(self):
         assistant = std_objects.get_assistant()

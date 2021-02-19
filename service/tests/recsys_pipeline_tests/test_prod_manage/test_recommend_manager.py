@@ -2,7 +2,6 @@ import unittest
 import numpy as np
 
 from prod_manage.recommend_manager import RecommendManager
-from model_level.assistant_builders import AssistantBuilder
 from model_level.models.mf_with_bias import MFWithBiasModel
 from ...helpers import std_objects
 

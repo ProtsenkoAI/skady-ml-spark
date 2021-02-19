@@ -15,9 +15,6 @@ class ModelAssistant:
         preds = self.preproc_forward(features)
         return self.processor.postproc_preds(preds)
 
-    def postproc_ids(self, ids):
-        raise NotImplementedError
-
     def update_with_interacts(self, interacts):
         self.processor.update(interacts)
         max_user_idx, max_item_idx = self.processor.get_nusers_nitems()
@@ -35,11 +32,6 @@ class ModelAssistant:
 
     def get_model(self):
         return self.model
-
-    def get_all_items(self):
-        # TODO: remove this method
-        conv = self.processor.get_item_conv()
-        return conv.get_all_ids()
 
     def _scale_model_if_needed(self, max_user_idx, max_item_idx):
         model_kwargs = self.model.get_init_kwargs()

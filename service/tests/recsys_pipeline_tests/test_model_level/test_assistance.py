@@ -27,13 +27,6 @@ class TestModelAssistant(unittest.TestCase):
         self.assertEqual(len(proc_labels), len(preds))
         self.assertIsInstance(proc_labels, torch.Tensor)
 
-    def test_get_all_items(self):
-        assistant = std_objects.get_assistant()
-        interacts = std_objects.get_interacts()
-        assistant.update_with_interacts(interacts)
-        all_items = assistant.get_all_items()
-        self.assertLessEqual(len(all_items), len(interacts))
-
     def test_update_with_interacts(self):
         assistant = std_objects.get_assistant(0, 0, 0)
         interacts = std_objects.get_interacts(100)
