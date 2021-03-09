@@ -6,3 +6,4 @@
 tmp_results/
 venv/
 vk_config*.json
+research/spark/dist/

@@ -5,14 +5,15 @@ name = "pypi"
 
 [packages]
 torch = "*"
-jupyterlab = "*"
 numpy = "*"
 pandas = "*"
 sklearn = "*"
-matplotlib = "*"
 vk-api = "*"
-fastapi = "*"
 pymongo = "*"
 tqdm = "*"
 
 [dev-packages]
+matplotlib = "*"
+jupyterlab = "*"
+
+
