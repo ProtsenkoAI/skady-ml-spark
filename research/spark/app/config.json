@@ -1,0 +1,4 @@
+{
+  "data_stream": {"type":  "text_files_dir", "path":  "/home/gldsn/Projects/skady-ml/research/spark/mock_data/"},
+  "app_name": "fit"
+}

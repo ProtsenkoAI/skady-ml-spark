@@ -1,0 +1,61 @@
+Spark Executor Command: "/usr/lib/jvm/java-11-openjdk-amd64/bin/java" "-cp" "/home/gldsn/my_apps/spark-3.1.1-bin-hadoop3.2/conf/:/home/gldsn/my_apps/spark-3.1.1-bin-hadoop3.2/jars/*" "-Xmx1024M" "-Dspark.driver.port=33325" "org.apache.spark.executor.CoarseGrainedExecutorBackend" "--driver-url" "spark://CoarseGrainedScheduler@192.168.1.17:33325" "--executor-id" "0" "--hostname" "192.168.1.17" "--cores" "4" "--app-id" "app-20210311013850-0000" "--worker-url" "spark://Worker@192.168.1.17:42691"
+========================================
+
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+21/03/11 01:38:52 INFO CoarseGrainedExecutorBackend: Started daemon with process name: 4944@gldsn-lnv
+21/03/11 01:38:52 INFO SignalUtils: Registering signal handler for TERM
+21/03/11 01:38:52 INFO SignalUtils: Registering signal handler for HUP
+21/03/11 01:38:52 INFO SignalUtils: Registering signal handler for INT
+21/03/11 01:38:52 WARN Utils: Your hostname, gldsn-lnv resolves to a loopback address: 127.0.1.1; using 192.168.1.17 instead (on interface enp1s0)
+21/03/11 01:38:52 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by org.apache.spark.unsafe.Platform (file:/home/gldsn/my_apps/spark-3.1.1-bin-hadoop3.2/jars/spark-unsafe_2.12-3.1.1.jar) to constructor java.nio.DirectByteBuffer(long,int)
+WARNING: Please consider reporting this to the maintainers of org.apache.spark.unsafe.Platform
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+21/03/11 01:38:53 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+21/03/11 01:38:53 INFO SecurityManager: Changing view acls to: gldsn
+21/03/11 01:38:53 INFO SecurityManager: Changing modify acls to: gldsn
+21/03/11 01:38:53 INFO SecurityManager: Changing view acls groups to: 
+21/03/11 01:38:53 INFO SecurityManager: Changing modify acls groups to: 
+21/03/11 01:38:53 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(gldsn); groups with view permissions: Set(); users  with modify permissions: Set(gldsn); groups with modify permissions: Set()
+21/03/11 01:38:54 INFO TransportClientFactory: Successfully created connection to /192.168.1.17:33325 after 69 ms (0 ms spent in bootstraps)
+21/03/11 01:38:54 INFO SecurityManager: Changing view acls to: gldsn
+21/03/11 01:38:54 INFO SecurityManager: Changing modify acls to: gldsn
+21/03/11 01:38:54 INFO SecurityManager: Changing view acls groups to: 
+21/03/11 01:38:54 INFO SecurityManager: Changing modify acls groups to: 
+21/03/11 01:38:54 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(gldsn); groups with view permissions: Set(); users  with modify permissions: Set(gldsn); groups with modify permissions: Set()
+21/03/11 01:38:54 INFO TransportClientFactory: Successfully created connection to /192.168.1.17:33325 after 7 ms (0 ms spent in bootstraps)
+21/03/11 01:38:54 INFO DiskBlockManager: Created local directory at /tmp/spark-3b11d355-e3f6-47d3-833a-d85224eff7ca/executor-2c9cd104-c3c2-4e3b-a8ca-394b77e3309f/blockmgr-ed550c1e-429c-4288-b887-64abc43eaf62
+21/03/11 01:38:54 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+21/03/11 01:38:54 INFO CoarseGrainedExecutorBackend: Connecting to driver: spark://CoarseGrainedScheduler@192.168.1.17:33325
+21/03/11 01:38:54 INFO WorkerWatcher: Connecting to worker spark://Worker@192.168.1.17:42691
+21/03/11 01:38:54 INFO ResourceUtils: ==============================================================
+21/03/11 01:38:54 INFO ResourceUtils: No custom resources configured for spark.executor.
+21/03/11 01:38:54 INFO ResourceUtils: ==============================================================
+21/03/11 01:38:54 INFO TransportClientFactory: Successfully created connection to /192.168.1.17:42691 after 27 ms (0 ms spent in bootstraps)
+21/03/11 01:38:55 INFO WorkerWatcher: Successfully connected to spark://Worker@192.168.1.17:42691
+21/03/11 01:38:55 INFO CoarseGrainedExecutorBackend: Successfully registered with driver
+21/03/11 01:38:55 INFO Executor: Starting executor ID 0 on host 192.168.1.17
+21/03/11 01:38:55 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 32897.
+21/03/11 01:38:55 INFO NettyBlockTransferService: Server created on 192.168.1.17:32897
+21/03/11 01:38:55 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+21/03/11 01:38:55 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(0, 192.168.1.17, 32897, None)
+21/03/11 01:38:55 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(0, 192.168.1.17, 32897, None)
+21/03/11 01:38:55 INFO BlockManager: Initialized BlockManager: BlockManagerId(0, 192.168.1.17, 32897, None)
+21/03/11 01:38:55 INFO CoarseGrainedExecutorBackend: Got assigned task 0
+21/03/11 01:38:55 INFO CoarseGrainedExecutorBackend: Got assigned task 1
+21/03/11 01:38:55 INFO Executor: Running task 0.0 in stage 0.0 (TID 0)
+21/03/11 01:38:55 INFO Executor: Running task 1.0 in stage 0.0 (TID 1)
+21/03/11 01:38:55 INFO TorrentBroadcast: Started reading broadcast variable 0 with 1 pieces (estimated total size 4.0 MiB)
+21/03/11 01:38:55 INFO TransportClientFactory: Successfully created connection to /192.168.1.17:40947 after 3 ms (0 ms spent in bootstraps)
+21/03/11 01:38:55 INFO MemoryStore: Block broadcast_0_piece0 stored as bytes in memory (estimated size 7.9 KiB, free 434.4 MiB)
+21/03/11 01:38:55 INFO TorrentBroadcast: Reading broadcast variable 0 took 182 ms
+21/03/11 01:38:55 INFO MemoryStore: Block broadcast_0 stored as values in memory (estimated size 10.4 KiB, free 434.4 MiB)
+21/03/11 01:38:56 INFO PythonRunner: Times: total = 700, boot = 512, init = 20, finish = 168
+21/03/11 01:38:56 INFO PythonRunner: Times: total = 711, boot = 516, init = 17, finish = 178
+21/03/11 01:38:56 INFO Executor: Finished task 0.0 in stage 0.0 (TID 0). 1400 bytes result sent to driver
+21/03/11 01:38:56 INFO Executor: Finished task 1.0 in stage 0.0 (TID 1). 1400 bytes result sent to driver
+21/03/11 01:38:56 INFO CoarseGrainedExecutorBackend: Driver commanded a shutdown
+21/03/11 01:38:57 ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM
+tdown
