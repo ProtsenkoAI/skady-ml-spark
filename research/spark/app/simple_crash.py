@@ -1,11 +1,9 @@
 import os
 import uuid
 import pandas as pd
-os.environ["SPARK_HOME"] = "/home/gldsn/my_apps/spark-3.1.1-bin-hadoop2.7"
 
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, IntegerType, BooleanType, StringType, FloatType
-from pyspark.streaming import DStream, StreamingContext
+from pyspark.sql.types import StructType, StructField, IntegerType, BooleanType
 
 spark = SparkSession \
     .builder \
@@ -31,21 +29,6 @@ unused_stream = stream_reader.format("csv").load(
 # TODO: join data_stream with unused_stream
 
 
-def printwithcomment(batch, idx):
-    print("unused!", batch)
-
-
-inp_unused_query = unused_stream.writeStream.format("console").foreachBatch(printwithcomment).start()
-# inp_unused_query.awaitTermination()
-
-
-def join_with_same_user_id(key, group):
-    unused = _load_or_create_unused_inters()
-    unused_user_inters = unused.filter(unused["user_actor_id"] == key[0])
-    # group.insert(0, "user_actor_id", key[0])
-    union = group.append(unused_user_inters)
-    union.columns = ["user_actor_id", "user_proposed_id", "label"]
-    return union
 
 
 def _load_or_create_unused_inters():
@@ -59,8 +42,7 @@ def rows_to_features_and_labels(df):
     return df
 
 
-grouped = data_stream.groupBy("user_actor_id")
-unioned = grouped.applyInPandas(join_with_same_user_id, schema=row_schema)
+unioned = data_stream.union(unused_stream)
 user_inters_count = unioned.groupBy("user_actor_id").count()
 fit_users = user_inters_count.filter(user_inters_count["count"] >= 10)["user_actor_id"]
 
@@ -82,8 +64,6 @@ def save_csv_random_name(df, batch_id):
 
 
 unused_query = unused_inters.writeStream.outputMode("append").foreachBatch(save_csv_random_name).start()
-# path2csv = UNUSED_PATH + f"{uuid.uuid4()}.csv"
-# unused_query = unused_inters.writeStream.format("csv").mode("overwrite").save(path2csv)
 streaming_query = fit_data.writeStream.outputMode("append").foreachBatch(print_df).start()
 
 unused_query.awaitTermination()

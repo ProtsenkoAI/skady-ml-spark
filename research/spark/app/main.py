@@ -1,3 +1,5 @@
+# TODO: ensure save all data to ./data/ folder
+
 from fastapi import FastAPI
 from sources.ml.spark import start_auto_fitting
 
