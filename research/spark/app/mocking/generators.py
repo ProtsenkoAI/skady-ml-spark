@@ -1,9 +1,12 @@
 import os
 from random import randint
 from typing import List
+import pandas as pd
+import numpy as np
 
-Sample = str
-Samples = List[Sample]
+# Sample = str
+# Samples = List[Sample]
+Samples = pd.DataFrame
 
 
 class TextDirGenerator:
@@ -21,18 +24,18 @@ class TextDirGenerator:
 
     def _create(self) -> Samples:
         n_lines_created = randint(1, self.max_nsamples_per_gen)
-        lines = [self._create_line() for _ in range(n_lines_created)]
-        return lines
-
-    def _create_line(self):
-        user_actor = randint(1, self.nusers)
-        user_target = randint(1, self.nusers)
-        result = randint(0, 1)
-        return f"{user_actor} {user_target} {result}"
+        df = pd.DataFrame(np.ones((n_lines_created, 3)))
+        df[0] = df[0].astype(int)
+        df[1] = df[1].astype(int)
+        df[2] = df[2].astype(bool)
+        return df
 
     def _push(self, samples: Samples):
-        random_file_name = os.path.join(self.dir_path, f"{self.nfiles}.txt")
-        with open(random_file_name, "w") as f:
-            samples_with_newlines = "\n".join(samples)
-            f.write(samples_with_newlines)
+        # random_file_name = os.path.join(self.dir_path, f"{self.nfiles}.txt")
+        random_file_name = os.path.join(self.dir_path, f"{self.nfiles}.csv")
+        # with open(random_file_name, "w") as f:
+            # samples_with_newlines = "\n".join(samples)
+            # samples_with_newlines = "bebebe\nsbababa"
+            # f.write(samples_with_newlines)
+        samples.to_csv(random_file_name, index=False, header=False)
         self.nfiles += 1

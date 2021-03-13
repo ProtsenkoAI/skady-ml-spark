@@ -7,3 +7,5 @@ tmp_results/
 venv/
 vk_config*.json
 research/spark/dist/
+research/spark/worker-dir/
+research/spark/mock_data/

@@ -11,9 +11,8 @@ sklearn = "*"
 vk-api = "*"
 pymongo = "*"
 tqdm = "*"
+pyspark = "*"
 
 [dev-packages]
 matplotlib = "*"
 jupyterlab = "*"
-
-

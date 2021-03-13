@@ -14,7 +14,9 @@ def _sleep_some_time(min_seconds=1, max_seconds=10):
         time.sleep(time_to_sleep)
 
 
-def run():
+def run(max_seconds=2, print_time=False):
     while True:
         data_generator.create_push()
-        _sleep_some_time()
+        if print_time:
+            print("pushed", time.time())
+        _sleep_some_time(max_seconds=max_seconds)
