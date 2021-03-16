@@ -1,12 +1,13 @@
 import time
+import os
 from random import uniform
 
 from util import read_config
-from .generators import TextDirGenerator
+from .generators import CsvDirGenerator
 
 conf = read_config()
-data_dir = conf["data_stream"]["path"]
-data_generator = TextDirGenerator(data_dir)
+data_dir = os.path.join(conf["data_dir"], conf["incoming_fit_stream"]["name"])
+data_generator = CsvDirGenerator(data_dir)
 
 
 def _sleep_some_time(min_seconds=1, max_seconds=10):

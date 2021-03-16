@@ -1,4 +1,7 @@
 {
-  "data_stream": {"type":  "text_files_dir", "path":  "/home/gldsn/Projects/skady-ml/research/spark/mock_data/"},
-  "app_name": "fit"
+  "data_dir": "/home/gldsn/Projects/skady-ml/research/spark/data/",
+  "incoming_fit_stream": {"type":  "csv", "name": "mock_incoming_interacts"},
+  "saving_unused_stream": {"type":  "csv", "name":  "unused_interacts"},
+  "data_params": {"min_num_inters_to_fit":  10, "use_vk":  false},
+  "app_name": "ML-universal"
 }

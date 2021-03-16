@@ -9,7 +9,7 @@ import numpy as np
 Samples = pd.DataFrame
 
 
-class TextDirGenerator:
+class CsvDirGenerator:
     def __init__(self, dir_path, max_nsamples_per_gen=20, nusers=1000):
         self.dir_path = dir_path
         self.max_nsamples_per_gen = max_nsamples_per_gen
@@ -24,7 +24,7 @@ class TextDirGenerator:
 
     def _create(self) -> Samples:
         n_lines_created = randint(1, self.max_nsamples_per_gen)
-        df = pd.DataFrame(np.ones((n_lines_created, 3)))
+        df = pd.DataFrame(np.random.randint(0, self.nusers, (n_lines_created, 3)))
         df[0] = df[0].astype(int)
         df[1] = df[1].astype(int)
         df[2] = df[2].astype(bool)
