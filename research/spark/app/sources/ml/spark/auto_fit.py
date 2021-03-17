@@ -1,12 +1,16 @@
 from pyspark.sql import SparkSession
 from pyspark.streaming import DStream, StreamingContext
 
+import os
 from .consts import row_schema, Types
 from util import read_config
 from ..data_proc.fit_preproc import FitDataPreprocessor
 from ..data_proc.data_managers import SparkStreamingFitDataManager
+from ..modeling.fitters import SparkFitter
+from ..modeling.models import MFWithBiasModel
 config = read_config()
 
+# TODO: kkep only last batch in create_fit_data when using streaming
 # TODO: move consts to consts/
 SomeModelType = None
 
@@ -14,14 +18,13 @@ SomeModelType = None
 def start_auto_fitting():
     # TODO: create fit_data_preprocessor here and use it
     data_stream, session = create_dstream(config, return_session=True)
+    # TODO: move setting model params to another place
+    model = MFWithBiasModel(100, 100, 10)
+    fitter = SparkFitter(config["train_params"], model)
     data_processor = FitDataPreprocessor(SparkStreamingFitDataManager())
 
-    update_users_history(data_stream)
     fit_interacts = data_processor.create_fit_data(data_stream)
-    start_receiving_results(fit_interacts)
-    # model = get_or_load_model()
-    # fit_model(fit_interacts, model)
-    # save_model(model)
+    fitter.fit_model(fit_interacts)
 
 
 def create_dstream(config, return_session=False) -> Types.RawData:
@@ -31,11 +34,11 @@ def create_dstream(config, return_session=False) -> Types.RawData:
         .appName(config["app_name"])\
         .getOrCreate()
 
-    stream_type = config["data_stream"]["type"]
-    if stream_type == "text_files_dir":
+    stream_type = config["fit_stream"]["type"]
+    stream_path = os.path.join(config["base_path"], config["fit_stream"]["relative_path"])
+    if stream_type == "csv":
         stream_reader = spark.readStream
-        data_stream = stream_reader.csv(config["data_stream"]["path"], schema=row_schema)
-        # data_stream = StreamingContext(spark.sparkContext, 1).textFileStream(config["data_stream"]["path"])
+        data_stream = stream_reader.csv(stream_path, schema=row_schema)
     else:
         raise ValueError(f"The type of data_stream is not supported: {stream_type}")
     if return_session:
@@ -51,12 +54,6 @@ def start_receiving_results(stream_df: Types.FitData):
 
     streaming_query = stream_df.writeStream.outputMode("append").foreachBatch(print_df).start()
     streaming_query.awaitTermination()
-
-
-def update_users_history(interacts: Types.RawData):
-    """Saves interacts to long-term history to load use it later"""
-    # TODO
-    pass
 
 
 def get_or_load_model() -> SomeModelType:
