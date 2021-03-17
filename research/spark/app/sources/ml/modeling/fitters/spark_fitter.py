@@ -36,9 +36,11 @@ class SparkFitter:
         self._save_fit_obj(fit_obj)
 
     def fit_model(self, data: DataFrame) -> SparkRes:
-        data.writeStream.
-        # fit_res = data.foreachPartition(lambda batch: self._fit_batch_save_model(batch))
-        # return fit_res
+        def fit_on_batch(batch, *args):
+            return self._fit_batch_save_model(batch)
+
+        fit_queue = data.writeStream.outputMode("append").foreachBatch(fit_on_batch).start()
+        fit_queue.awaitTermination()
 
     def _load_fit_obj(self) -> ModelObj:
         if os.path.isfile(self.path2packed_model):
@@ -56,18 +58,19 @@ class SparkFitter:
 
     def _save_fit_obj(self, fit_obj: SerializablePackagedModel):
         os.makedirs(os.path.dirname(self.path2packed_model), exist_ok=True)
+        serialized = dill.dumps(fit_obj)
         with open(self.path2packed_model, "wb") as f:
-            obj = codecs.encode(dill.dumps(fit_obj), "base64")
-            f.write(dill.dumps(obj))
+            encoded = codecs.encode(serialized, "base64")
+            f.write(encoded)
 
     def _load_fit_obj_from_path(self, path):
         with codecs.open(path, "rb") as f:
-            torch_obj_decoded = codecs.decode(f, "base64")
-        torch_obj = dill.load(torch_obj_decoded)
+            torch_obj_decoded = codecs.decode(f.read(), "base64")
+        torch_obj = dill.loads(torch_obj_decoded)
         return torch_obj
 
     def _fit_batch_save_model(self, batch) -> FitBatchRes:
         # TODO: check that all used objects are correctly serializable
         print("batch", batch)
         fit_obj = self._load_fit_obj()
-        raise NotImplementedError
+        print("count", batch.count())

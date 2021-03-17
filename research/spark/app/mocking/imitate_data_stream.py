@@ -6,7 +6,7 @@ from util import read_config
 from .generators import CsvDirGenerator
 
 conf = read_config()
-data_dir = os.path.join(conf["data_dir"], conf["incoming_fit_stream"]["name"])
+data_dir = os.path.join(conf["base_path"], conf["fit_stream"]["relative_path"])
 data_generator = CsvDirGenerator(data_dir)
 
 
