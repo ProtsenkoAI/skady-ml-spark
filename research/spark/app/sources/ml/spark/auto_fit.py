@@ -54,15 +54,3 @@ def start_receiving_results(stream_df: Types.FitData):
 
     streaming_query = stream_df.writeStream.outputMode("append").foreachBatch(print_df).start()
     streaming_query.awaitTermination()
-
-
-def get_or_load_model() -> SomeModelType:
-    raise NotImplementedError
-
-
-def fit_model(inters, model: SomeModelType):
-    raise NotImplementedError
-
-
-def save_model(model: SomeModelType):
-    raise NotImplementedError

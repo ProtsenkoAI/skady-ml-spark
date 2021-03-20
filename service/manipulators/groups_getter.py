@@ -1,8 +1,8 @@
 import vk_api
-from ..ml_sources.data_processing.vk_parsing import helpers
-from ..ml_sources.data_processing.vk_parsing.obtainers import vk_obtainers
-from ..ml_sources.data_processing.vk_parsing.retrievers import vk_retrievers
-from ..ml_sources.data_processing.vk_parsing.exceptions import VkRequestException
+from ..ml.data_processing.vk_parsing import helpers
+from ..ml.data_processing.vk_parsing.obtainers import vk_obtainers
+from ..ml.data_processing.vk_parsing.retrievers import vk_retrievers
+from ..ml.data_processing.vk_parsing.exceptions import VkRequestException
 
 
 class GroupsGetter:

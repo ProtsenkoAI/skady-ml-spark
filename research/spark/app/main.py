@@ -1,16 +1,14 @@
-# TODO: ensure save all data to ./data/ folder
-
 from fastapi import FastAPI
 from sources.ml.spark import start_auto_fitting
 
 
 def main():
+    # TODO: make function to parse nginx log and push batches of data to fit
     start_auto_fitting()
-
-    # bruh do it in your proper way
+    # bruh do API things in your proper way
     api = FastAPI()
     set_api_endpoints(api)
-    globals()["api"] = api
+    globals()["api"] = api  # move api to globals() because FastAPI needs it to start app
 
 
 def set_api_endpoints(api: FastAPI):
