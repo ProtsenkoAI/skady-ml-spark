@@ -7,7 +7,7 @@ from .generators import CsvDirGenerator
 
 conf = read_config()
 data_dir = os.path.join(conf["base_path"], conf["fit_stream"]["relative_path"])
-data_generator = CsvDirGenerator(data_dir)
+data_generator = CsvDirGenerator(data_dir, nusers=100)
 
 
 def _sleep_some_time(min_seconds=1, max_seconds=10):

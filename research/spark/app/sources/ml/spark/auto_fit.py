@@ -6,7 +6,7 @@ from .consts import row_schema, Types
 from util import read_config
 from ..data_proc.fit_preproc import FitDataPreprocessor
 from ..data_proc.data_managers import SparkStreamingFitDataManager
-from ..modeling.fitters import SparkFitter
+from ..modeling.fitting import SparkFitter
 from ..modeling.models import MFWithBiasModel
 config = read_config()
 
@@ -20,8 +20,8 @@ def start_auto_fitting():
     data_stream, session = create_dstream(config, return_session=True)
     # TODO: move setting model params to another place
     model = MFWithBiasModel(100, 100, 10)
-    fitter = SparkFitter(config["train_params"], model)
-    data_processor = FitDataPreprocessor(SparkStreamingFitDataManager())
+    data_processor = FitDataPreprocessor(SparkStreamingFitDataManager(), mode="torch")
+    fitter = SparkFitter(config["train_params"], model, data_processor)
 
     fit_interacts = data_processor.create_fit_data(data_stream)
     fitter.fit_model(fit_interacts)
