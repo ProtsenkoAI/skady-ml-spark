@@ -23,9 +23,9 @@ class TestTrainer(unittest.TestCase):
         trainer = std_objects.get_simple_trainer()
         assistant = std_objects.get_assistant()
         interacts = std_objects.get_interacts()
-        weights_before = self._get_model_weights(assistant.get_model())
+        weights_before = self._get_model_weights(assistant.get_model_manager())
         trainer.fit(assistant, interacts, max_epoch=2)
-        weights_after = self._get_model_weights(assistant.get_model())
+        weights_after = self._get_model_weights(assistant.get_model_manager())
 
         for old, new in zip(weights_before, weights_after):
             old_new_compare = old == new

@@ -3,7 +3,6 @@ from pyspark.sql import DataFrame, functions
 from .base_class import FitDataManager
 from ....spark.consts import Types
 
-# TODO: refactor
 
 
 class SparkStreamingFitDataManager(FitDataManager):

@@ -15,8 +15,8 @@ class StandardLoaderBuilder:
 class UserItemsLoaderBuilder:
     def __init__(self, batch_size):
         self.batch_size = batch_size
-        self.user_colname = "user_id"
-        self.item_colname = "anime_id"
+        self.user_colname = "user_actor_id"
+        self.item_colname = "user_proposed_id"
 
     def build(self, user, items):
         interacts = self._create_interacts(user, items)

@@ -12,3 +12,6 @@ research/spark/worker-dir/*
 # research/spark/unused_mock_data/
 research/spark/data/
 
+research/spark/worker_dir/
+worker_dir/
+

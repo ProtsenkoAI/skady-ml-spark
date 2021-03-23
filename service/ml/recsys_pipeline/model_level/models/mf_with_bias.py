@@ -37,6 +37,18 @@ class MFWithBiasModel(nn.Module):
         item_layers = [self.item_factors, self.item_biases]
         self._concat_new_weights_to_params(item_layers, nitems)
 
+    def delete_users(self, *users_idxs):
+        user_layers = [self.user_factors, self.user_biases]
+        for user in users_idxs:
+            self._remove_layer_slice_by_idx(user_layers, user)
+        self.nusers -= len(users_idxs)
+
+    def delete_items(self, *items_idxs):
+        item_layers = [self.item_factors, self.item_biases]
+        for item in items_idxs:
+            self._remove_layer_slice_by_idx(item_layers, item)
+        self.nitems -= len(items_idxs)
+
     def get_init_kwargs(self):
         return {"nusers": self.nusers, "nitems": self.nitems, "hidden_size": self.hidden_size}
 
@@ -50,3 +62,13 @@ class MFWithBiasModel(nn.Module):
     def _init_new_weights(self, number_of_objects_added):
         tensor = torch.zeros(number_of_objects_added, self.hidden_size)
         return nn.init.normal_(tensor)
+
+    def _remove_layer_slice_by_idx(self, layers, idx):
+        for layer in layers:
+            weights = layer.weight
+
+            left = weights[:idx]
+            right_without_deleted_idx = weights[idx + 1:]
+            new_weights = torch.cat([left, right_without_deleted_idx], dim=0)
+
+            layer.weight = nn.Parameter(new_weights)

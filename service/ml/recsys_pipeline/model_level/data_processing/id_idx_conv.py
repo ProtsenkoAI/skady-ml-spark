@@ -17,6 +17,11 @@ class IdIdxConv:
         ids = [self.idx2id[int(idx)] for idx in idxs]
         return ids
 
+    def delete_by_ids(self, ids):
+        for obj_id in ids:
+            idx = self.id2idx[obj_id]
+        raise NotImplementedError
+
     def get_all_ids(self):
         ordered_idx2id = OrderedDict(self.idx2id)
         ids_sorted_by_idx = list(ordered_idx2id.values())

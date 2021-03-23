@@ -16,7 +16,6 @@ class CsvDirGenerator:
         self.nusers = nusers
 
         self.nfiles = 0
-        os.makedirs(dir_path, exist_ok=True)
 
     def create_push(self):
         new_data = self._create()

@@ -8,6 +8,7 @@ class TensorCreator:
     def get_feature_tensor(self, feature):
         if not isinstance(feature, torch.Tensor):
             feature = torch.tensor(feature)
+        print("device", self.device)
         feature = feature.to(self.device).long()
         # feature = index_features.reshape(-1, 1)
         return feature

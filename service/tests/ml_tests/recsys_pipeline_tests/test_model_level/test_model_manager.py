@@ -34,7 +34,7 @@ class TestModelManager(unittest.TestCase):
 
     def test_get_model(self):
         assistant = std_objects.get_assistant()
-        model = assistant.get_model()
+        model = assistant.get_model_manager()
         self.assertIsInstance(model, nn.Module)
 
     def test_update_then_predict(self):

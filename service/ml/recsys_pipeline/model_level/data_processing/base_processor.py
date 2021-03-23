@@ -39,6 +39,7 @@ class BaseProcessor(ABC):
         return self.tensor_creator.get_labels_tensor(labels)
 
     def split_features(self, features, features_concated=True):
+        print("features", features)
         if features_concated:
             users, items = zip(*features)
         else:
@@ -49,6 +50,9 @@ class BaseProcessor(ABC):
         users_data = self.get_user_conv().dump()
         items_data = self.get_item_conv().dump()
         return users_data, items_data
+
+    def get_all_items(self):
+        return self.item_conv.get_all_ids()
 
     def get_user_conv(self):
         return self.user_conv
@@ -66,6 +70,18 @@ class BaseProcessor(ABC):
         users, items = self._get_users_items(interacts)
         self.user_conv.add_ids(*users)
         self.item_conv.add_ids(*items)
+
+    def add_user(self, user):
+        self.user_conv.add_ids(user)
+
+    def add_item(self, item):
+        self.item_conv.add_ids(item)
+
+    def delete_users(self, *users):
+        self.user_conv.delete_by_ids(users)
+
+    def delete_items(self, *items):
+        self.item_conv.delete_by_ids(items)
 
     def postproc_preds(self, preds):
         return list(preds.squeeze(1).cpu().detach().numpy())

@@ -1,17 +1,22 @@
 {
   "base_path": "/home/gldsn/Projects/skady-ml",
-  "worker_dir": "research/spark/worker_dir",
+  "worker_dir": "worker_dir",
   "mode": "spark",
-  "device": "cuda",
-  "fit_stream": {"type":  "csv", "relative_path": "research/spark/data/mock_incoming_interacts"},
+  "device": "cpu",
+  "fit_stream": {"type":  "csv", "relative_path": "data/mock_incoming_interacts"},
   "data_params": {"min_num_inters_to_fit":  10, "use_vk":  false},
   "app_name": "ML-universal",
-  "model_file_name": "model.dill",
+  "model_checkpoint_name": "model.dill",
   "train_params": {
     "batch_size": 8,
-    "nsteps": 10,
-    "model": {
-      "type": "cf"
-    }
+    "nsteps": 10
+  },
+  "recommend_params": {
+    "batch_size": 16
+  },
+  "model_params": {
+    "nusers": 1,
+    "nitems": 1,
+    "hidden_size": 20
   }
 }
