@@ -15,8 +15,8 @@
     "batch_size": 16
   },
   "model_params": {
-    "nusers": 1,
-    "nitems": 1,
+    "nusers": 0,
+    "nitems": 0,
     "hidden_size": 20
   }
 }

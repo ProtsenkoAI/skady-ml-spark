@@ -10,7 +10,6 @@ from .generators import CsvDirGenerator
 conf = read_config()
 data_dir = os.path.join(conf["base_path"], conf["fit_stream"]["relative_path"])
 shutil.rmtree(data_dir, ignore_errors=True)
-os.makedirs(data_dir, exist_ok=True)
 
 
 def _sleep_some_time(min_seconds=1, max_seconds=10):
@@ -24,6 +23,7 @@ class DataSimulator:
         self.data_generation_process = GenDataThread(print_time, max_seconds, nusers)
 
     def start(self):
+        os.makedirs(data_dir, exist_ok=True)
         self.data_generation_process.start()
 
     def stop(self):

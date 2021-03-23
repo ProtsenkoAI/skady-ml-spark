@@ -36,5 +36,6 @@ class CsvDirGenerator:
             # samples_with_newlines = "\n".join(samples)
             # samples_with_newlines = "bebebe\nsbababa"
             # f.write(samples_with_newlines)
+        print("dumping", os.path.isdir(os.path.dirname(random_file_name)))
         samples.to_csv(random_file_name, index=False, header=False)
         self.nfiles += 1

@@ -1,5 +1,6 @@
 import unittest
 from time import time
+import os
 
 from helpers import tests_config, std_objects
 from helpers.mocking.imitate_data_stream import DataSimulator
@@ -19,11 +20,10 @@ class TestML(unittest.TestCase):
         ml.start_fitting()
         recommends = ml.get_recommends(user=0)
         duration = time() - start
-        self.assertLess(duration, 20) # in seconds
-        ml.stop_fitting()
+        self.assertLess(duration, 20)  # in seconds
 
-        data_simulator.stop()
         ml.stop_fitting()
+        data_simulator.stop()
 
     def test_add_user_then_can_give_recommends(self):
         ml = self._create_ml()
@@ -39,7 +39,8 @@ class TestML(unittest.TestCase):
         ml.add_user(user)
         ml.delete_user(user)
         with self.assertRaises(Exception):
-            ml.get_recommends(user)
+            recommends = ml.get_recommends(user)
+            print("delete recommends", recommends)
 
     def _create_ml(self):
         return std_objects.get_ml()

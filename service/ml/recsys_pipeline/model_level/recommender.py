@@ -12,6 +12,8 @@ class Recommender:
         return items_scores
 
     def get_recommends(self, users, assistant, all_items):
+        if len(all_items) == 0:
+            raise ValueError("all_items are empty")
         recommends = []
         for user in users:
             items_scores = self.score_all_items(user, assistant, all_items)

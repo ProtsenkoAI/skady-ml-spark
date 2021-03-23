@@ -12,6 +12,7 @@ vk-api = "*"
 pymongo = "*"
 tqdm = "*"
 pyspark = "*"
+bidict = "*"
 
 [dev-packages]
 matplotlib = "*"

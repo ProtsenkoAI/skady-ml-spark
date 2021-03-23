@@ -24,6 +24,7 @@ class ML:
     def get_recommends(self, user):
         # return self.model.predict_user(user)
         all_items = self.model.processor.get_all_items()
+        print("in recommends", user, all_items)
         recommends = self.recommender.get_recommends([user], self.model, all_items)
         return recommends
 
