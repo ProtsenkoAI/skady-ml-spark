@@ -1,19 +1,14 @@
 # TODO: test time to load and save model
 # TODO: check how the sparktorch repo is implemented on the github for insights
-# TODO: finish type hints
-
-from pyspark.sql import DataFrame
-from .weights_updater import WeightsUpdater
-
-# TODO: delete reading config here and move it to top level
+from train_eval.updating_weights.weights_updater import WeightsUpdater
+from .trainer import Trainer
+from model_level import ModelManager
+from data.obtain import StreamDataManager
 
 # TODO: refactor types
-SparkRes = DataFrame  # TODO: move to types
-
-FitBatchRes = DataFrame
 
 
-class SparkTrainer:
+class StreamingTrainer(Trainer):
     # TODO: check that serialises well
     # TODO: check for better ways for serializing strategies
     def __init__(self, loader_builder, spark_saver, lr=1e-4):
@@ -25,14 +20,13 @@ class SparkTrainer:
         self.weights_updater = WeightsUpdater(lr)
         self.fit_queue = None
 
-    def fit(self, manager, data: DataFrame):
+    def fit(self, manager: ModelManager, stream_data_manager: StreamDataManager):
         def fit_on_batch(batch, batch_idx):
             self._fit_batch_save_model(batch)
 
         self.spark_saver.save(manager, self.weights_updater, self.loader_builder)
-        # TODO: the code below is dependent from spark structured streaming. Make it work with any kind
-        # of spark data (non-streaming too)
-        self.fit_queue = data.writeStream.outputMode("append").foreachBatch(fit_on_batch).start()
+        # self.fit_queue = data.writeStream.outputMode("append").foreachBatch(fit_on_batch).start()
+        stream_data_manager.apply_whenever_data_recieved(fit_on_batch)
         # TODO: run fitting in some thread process that can continue in background
         # self.fit_queue.awaitTermination()
 
@@ -53,8 +47,5 @@ class SparkTrainer:
         # TODO: change iterating for batches to some custom iterator object
         # for minibatch in batch_iterator(fit_data):
         for minibatch in batch_iterator:
-            print("batch", minibatch)
             weights_updater.fit_with_batch(manager, minibatch)
-        print("saving")
         self.spark_saver.save(manager, weights_updater, loader_builder)
-        print("end saving")

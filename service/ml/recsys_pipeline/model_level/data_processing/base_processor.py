@@ -51,9 +51,6 @@ class BaseProcessor(ABC):
         items_data = self.get_item_conv().dump()
         return users_data, items_data
 
-    def get_all_items(self):
-        return self.item_conv.get_all_ids()
-
     def get_user_conv(self):
         return self.user_conv
 
@@ -64,6 +61,9 @@ class BaseProcessor(ABC):
         users = self.user_conv.get_all_idxs()
         items = self.item_conv.get_all_idxs()
         return len(users), len(items)
+
+    def get_all_items(self):
+        return self.item_conv.get_all_ids()
 
     def update(self, interacts):
         interacts = interacts.copy()

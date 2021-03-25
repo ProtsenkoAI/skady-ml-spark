@@ -1,14 +1,14 @@
-from torch import nn
-from torch import optim
-from .weights_updater import WeightsUpdater
+from train_eval.updating_weights.weights_updater import WeightsUpdater
+from .trainer import Trainer
 
 
-class SimpleTrainer:
+class SimpleTrainer(Trainer):
     def __init__(self, loader_builder, lr=1e-4):
         self.loader_builder = loader_builder
         self.weights_updater = WeightsUpdater(lr)
 
     def fit(self, manager, interacts, max_epoch=None, max_step=None):
+        # TODO: switch from interacts to obtainer
         manager.update_with_interacts(interacts)
         self.weights_updater.prepare_for_fit(manager)
         loader = self.loader_builder.build(interacts)

@@ -20,7 +20,7 @@ class TestML(unittest.TestCase):
         ml.start_fitting()
         recommends = ml.get_recommends(user=0)
         duration = time() - start
-        self.assertLess(duration, 20)  # in seconds
+        self.assertLess(duration, 60)  # in seconds
 
         ml.stop_fitting()
         data_simulator.stop()

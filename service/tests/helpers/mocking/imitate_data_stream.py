@@ -8,7 +8,7 @@ from ml_util import read_config
 from .generators import CsvDirGenerator
 
 conf = read_config()
-data_dir = os.path.join(conf["base_path"], conf["fit_stream"]["relative_path"])
+data_dir = os.path.join(conf["paths"]["base_path"], conf["obtainer_params"]["fit_stream"]["relative_path"])
 shutil.rmtree(data_dir, ignore_errors=True)
 
 

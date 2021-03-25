@@ -1,0 +1,3 @@
+class SimpleObtainer:
+    # TODO
+    ...

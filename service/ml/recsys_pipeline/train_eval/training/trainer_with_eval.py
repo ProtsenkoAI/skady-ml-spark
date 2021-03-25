@@ -1,10 +1,11 @@
 import numpy as np
 from sklearn import model_selection
-from .weights_updater import WeightsUpdater
+from train_eval.updating_weights.weights_updater import WeightsUpdater
 from model_level.model_managing import ModelManager
+from .trainer import Trainer
 
 
-class EvalTrainer:
+class EvalTrainer(Trainer):
     def __init__(self, validator, loader_builder, saver, test_percentage=0.2, steps_between_evals=200,
                  lr=1e-4, save_best_model=True):
         self.validator = validator

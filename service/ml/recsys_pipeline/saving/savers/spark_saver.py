@@ -1,12 +1,11 @@
 import os
 import codecs
 import dill
-from time import time
 
 from typing import Tuple
 from collections import namedtuple
 from model_level.model_managing import ModelManager
-from train_eval.training.weights_updater import WeightsUpdater
+from train_eval.updating_weights.weights_updater import WeightsUpdater
 
 
 SerializablePackagedModel = namedtuple("SerializablePackagedModel",

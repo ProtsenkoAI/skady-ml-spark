@@ -39,6 +39,9 @@ class ModelManager:
     def get_processor(self):
         return self.processor
 
+    def get_all_users(self):
+        return self.processor.get_all_items()
+
     # TODO: remove this ugly system of adding users and replace it with simple add_user() delete_user() methods
     def _scale_model_if_needed(self, max_user_idx, max_item_idx):
         model_kwargs = self.model.get_init_kwargs()
