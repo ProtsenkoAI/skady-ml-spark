@@ -1,6 +1,6 @@
 # TODO: apply Robert Martin's "layered architecture" from his blog
 from recsys_pipeline.factory import ObjsCreator
-from .types import User
+from ml_types import User
 
 
 class ML:
@@ -17,6 +17,9 @@ class ML:
         data_obtainer = self.objs_creator.get_obtainer()
         fit_data = data_obtainer.get_fit_data()
         self.fitter.fit(self.model, fit_data)
+
+    def await_fit(self, timeout=None):
+        self.fitter.await_fit(timeout)
 
     def stop_fitting(self):
         self.fitter.stop_fit()

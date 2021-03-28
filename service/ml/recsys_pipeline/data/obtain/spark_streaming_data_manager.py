@@ -1,4 +1,0 @@
-from .stre
-
-
-class SparkStreamingDataManager()

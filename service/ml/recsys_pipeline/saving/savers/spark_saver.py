@@ -1,3 +1,6 @@
+# TODO: check for better ways for serializing strategies
+# TODO: check that serialises well
+# TODO: test time to load and save model
 import os
 import codecs
 import dill
@@ -6,6 +9,7 @@ from typing import Tuple
 from collections import namedtuple
 from model_level.model_managing import ModelManager
 from train_eval.updating_weights.weights_updater import WeightsUpdater
+from data.building_loaders import StandardLoaderBuilder
 
 
 SerializablePackagedModel = namedtuple("SerializablePackagedModel",
@@ -21,7 +25,7 @@ class SparkSaver:
     def __init__(self, save_path):
         self.save_path = save_path
 
-    def load(self) -> Tuple[ModelManager, WeightsUpdater]:
+    def load(self) -> Tuple[ModelManager, WeightsUpdater, StandardLoaderBuilder]:
         if os.path.isfile(self.save_path):
             model_obj = self._load_fit_obj_from_path(self.save_path)
             manager = ModelManager(model_obj.model, model_obj.processor)
@@ -31,7 +35,7 @@ class SparkSaver:
             loader_builder = model_obj.loader_creator
             return manager, weights_updater, loader_builder
         else:
-            raise ValueError(f"manager_save_path: {self.manager_save_path} doesn't exist")
+            raise ValueError(f"manager_save_path: {self.save_path} doesn't exist")
 
     def save(self, manager: ModelManager, updater: WeightsUpdater, loader_creator):
         model = manager.get_model()

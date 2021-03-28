@@ -3,9 +3,10 @@ import os
 
 from pyspark.sql.types import StructType, StructField, IntegerType, BooleanType
 from pyspark.sql import DataFrame
+from .data_managers import StreamingDataManager, SparkStreamingDataManager
 
 Stream = DataFrame
-FitData = DataFrame
+FitData = StreamingDataManager
 
 cols = ["user_actor_id", "user_proposed_id", "label"]
 row_schema = StructType([
@@ -21,17 +22,16 @@ class SparkObtainer:
         Takes spark stream and prepares them for fit
         """
         # TODO: not to hardcode label_colname
-        config = config
         self.stream_type = config["fit_stream"]["type"]
         self.stream_path = os.path.join(paths["base_path"], config["fit_stream"]["relative_path"])
         self.app_name = config["app_name"]
 
         self.stream = self._get_stream(self.stream_path, self.stream_type, self.app_name)
 
-    def _get_stream(self, pth, stream_type, app_name="app") -> Stream:
+    def _get_stream(self, pth, stream_type, app_name) -> Stream:
         spark = SparkSession \
             .builder \
-            .appName(app_name) \
+            .appName(app_name).config("spark.scheduler.mode", "FAIR") \
             .getOrCreate()
 
         if stream_type == "csv":
@@ -42,4 +42,4 @@ class SparkObtainer:
         return data_stream
 
     def get_fit_data(self) -> FitData:
-        return self.stream
+        return SparkStreamingDataManager(self.stream)

@@ -11,9 +11,9 @@ from model_level.data_processing import get_standard_processor
 from data import StandardLoaderBuilder, UserItemsLoaderBuilder
 from data.datasets import InteractDataset
 from model_level import Recommender
-from train_eval import SimpleTrainer
+from train_eval.trainers.simple_trainer import SimpleTrainer
 from train_eval.evaluation import Validator
-from train_eval import EvalTrainer
+from train_eval.trainers.trainer_with_eval import EvalTrainer
 
 from helpers import tests_config
 

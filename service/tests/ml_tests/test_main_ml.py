@@ -1,11 +1,9 @@
 import unittest
 from time import time
-import os
+from pyspark import SparkContext
 
-from helpers import tests_config, std_objects
+from helpers import std_objects
 from helpers.mocking.imitate_data_stream import DataSimulator
-
-config = tests_config.TestsConfig()
 
 
 class TestML(unittest.TestCase):
@@ -21,7 +19,7 @@ class TestML(unittest.TestCase):
         recommends = ml.get_recommends(user=0)
         duration = time() - start
         self.assertLess(duration, 60)  # in seconds
-
+        ml.await_fit(10)  # awaiting so train can be started and if it contains bugs the errors will be raised
         ml.stop_fitting()
         data_simulator.stop()
 

@@ -1,9 +1,10 @@
 {
   "mode": "spark",
   "fitter_params": {
-    "nepochs": 10,
-    "batch_size": 16,
-    "model_checkpoint_name": "model.dill"
+    "nepochs": 1,
+    "model_checkpoint_name": "model.dill",
+    "lr": 1e-4,
+    "batch_size": 8
   },
   "recommender_params": {
     "batch_size": 16
@@ -17,8 +18,7 @@
     "fit_stream": {"type":  "csv", "relative_path": "data/mock_incoming_interacts"},
     "min_num_inters_to_fit":  10,
     "use_vk":  false,
-    "app_name": "ML-universal",
-    "batch_size": 8
+    "app_name": "ML-universal"
   },
   "paths": {
     "base_path": "/home/gldsn/Projects/skady-ml",

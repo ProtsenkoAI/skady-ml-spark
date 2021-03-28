@@ -1,5 +1,5 @@
 from train_eval.updating_weights.weights_updater import WeightsUpdater
-from .trainer import Trainer
+from train_eval.trainers.trainer import Trainer
 
 
 class SimpleTrainer(Trainer):

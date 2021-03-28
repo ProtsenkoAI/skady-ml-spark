@@ -17,41 +17,15 @@ class ModelManager:
         preds = self.preproc_forward(features)
         return self.processor.postproc_preds(preds)
 
-    def update_with_interacts(self, interacts):
-        # TODO: remove update with interacts and replace it with simple add_user() delete_user()
-        self.processor.update(interacts)
-        max_user_idx, max_item_idx = self.processor.get_nusers_nitems()
-        self._scale_model_if_needed(max_user_idx, max_item_idx)
-        self.processor.update(interacts)
-
-    def save(self, saver):
-        name = saver.save(self.model, self.processor)
-        return name
-
-    @classmethod
-    def from_save(cls, saver, name):
-        model, processor = saver.load(name)
-        return cls(model, processor)
-
     def get_model(self):
         return self.model
 
+    # TODO: refactor savers so can use manager_saver.save() and not to expose attributes like processor
     def get_processor(self):
         return self.processor
 
     def get_all_users(self):
         return self.processor.get_all_items()
-
-    # TODO: remove this ugly system of adding users and replace it with simple add_user() delete_user() methods
-    def _scale_model_if_needed(self, max_user_idx, max_item_idx):
-        model_kwargs = self.model.get_init_kwargs()
-        nusers, nitems = model_kwargs["nusers"], model_kwargs["nitems"]
-        new_users_needed = max(max_user_idx - nusers, 0)
-        new_items_needed = max(max_item_idx - nitems, 0)
-        if new_users_needed:
-            self.model.add_users(new_users_needed)
-        if new_items_needed:
-            self.model.add_items(new_items_needed)
 
     def add_user(self, user_id):
         # TODO: deal with user/item is the same in Skady problem (need more generic methods etc.)

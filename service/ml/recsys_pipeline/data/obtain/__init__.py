@@ -1,2 +1,2 @@
 from .creator import ObtainerCreator
-from .fit_data_manager import FitDataManager
+from data.obtain.data_managers.streaming_data_manager import StreamingDataManager

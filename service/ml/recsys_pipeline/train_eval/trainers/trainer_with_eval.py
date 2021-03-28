@@ -2,7 +2,7 @@ import numpy as np
 from sklearn import model_selection
 from train_eval.updating_weights.weights_updater import WeightsUpdater
 from model_level.model_managing import ModelManager
-from .trainer import Trainer
+from train_eval.trainers.trainer import Trainer
 
 
 class EvalTrainer(Trainer):
