@@ -4,7 +4,7 @@ from torch import nn
 from typing import List
 
 
-class RecsysTorchModel(ABC, nn.Module):
+class BaseNetComponent(ABC, nn.Module):
     def __init__(self):
         super().__init__()
 
