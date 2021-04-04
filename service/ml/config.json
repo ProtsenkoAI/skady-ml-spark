@@ -1,13 +1,28 @@
 {
-  "mode": "spark",
+  "common_params": {
+    "mode": "spark",
+    "app_name": "ML-universal",
+    "log_level": "FATAL",
+    "paths": {
+      "base_path": "/home/gldsn/Projects/skady-ml",
+      "worker_dir": "worker_dir",
+      "model_checkpoint_name": "model.dill"
+    }
+  },
+  "saver_params": {
+  },
+  "users_manager_params": {
+    "users_add_delete_file_name": "add_and_delete_lists.json"
+  },
   "fitter_params": {
     "nepochs": 1,
-    "model_checkpoint_name": "model.dill",
     "lr": 1e-4,
     "batch_size": 8
   },
   "recommender_params": {
-    "batch_size": 16
+    "batch_size": 16,
+    "recommend_input_dir_name": "recommend_input",
+    "recommend_output_dir_name": "recommend_output"
   },
   "model_manager_params": {
     "nusers": 0,
@@ -18,10 +33,6 @@
     "fit_stream": {"type":  "csv", "relative_path": "data/mock_incoming_interacts"},
     "min_num_inters_to_fit":  10,
     "use_vk":  false,
-    "app_name": "ML-universal"
-  },
-  "paths": {
-    "base_path": "/home/gldsn/Projects/skady-ml",
-    "worker_dir": "worker_dir"
+    "interacts_columns_names": ["user_actor_id", "user_proposed_id", "label"]
   }
 }

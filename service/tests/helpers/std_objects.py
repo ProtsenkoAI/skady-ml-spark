@@ -3,17 +3,15 @@ from torch.utils import data as torch_data
 
 from main_ml import ML
 from ml_util import read_config
-from saving.savers import StandardSaver
+from model.saving.standard_saver import StandardSaver
 from storages import LocalModelStorage
-from model_level import ModelManager
-from model_level import MFWithBiasModel
-from model_level.data_processing import get_standard_processor
-from data import StandardLoaderBuilder, UserItemsLoaderBuilder
+from model.expose.model_manager import ModelManager
+from model.manage.models import MFWithBiasModel
+from model.manage.data_processing import get_standard_processor
+from data.building_loaders import StandardLoaderBuilder, UserItemsLoaderBuilder
 from data.datasets import InteractDataset
-from model_level import Recommender
-from train_eval.trainers.simple_trainer import SimpleTrainer
-from train_eval.evaluation import Validator
-from train_eval.trainers.trainer_with_eval import EvalTrainer
+from model.recommend import LocalRecommender
+from train.evaluation import Validator
 
 from helpers import tests_config
 
@@ -53,7 +51,7 @@ def get_train_scheduler(steps_in_epoch, **kwargs):
 def get_recommender():
     builder = UserItemsLoaderBuilder(batch_size=8)
     # return Recommender(builder)
-    return Recommender(builder)
+    return LocalRecommender(builder)
 
 
 def get_interacts(nrows=20):

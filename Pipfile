@@ -13,6 +13,7 @@ pymongo = "*"
 tqdm = "*"
 pyspark = "*"
 bidict = "*"
+dill = "*"
 
 [dev-packages]
 matplotlib = "*"

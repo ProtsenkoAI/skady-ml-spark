@@ -1,2 +1,0 @@
-from .streaming_data_manager import StreamingDataManager
-from .spark_streaming_data_manager import SparkStreamingDataManager
