@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 
 
-class BaseProcessor(ABC):
+class Processor(ABC):
     # TODO: reduce number of methods
     def __init__(self, user_conv, item_conv, tensor_creator):
         self.user_conv = user_conv
@@ -44,7 +44,6 @@ class BaseProcessor(ABC):
         return self.tensor_creator.get_labels_tensor(labels)
 
     def split_features(self, features, features_concated=True):
-        print("features", features)
         if features_concated:
             users, items = zip(*features)
         else:

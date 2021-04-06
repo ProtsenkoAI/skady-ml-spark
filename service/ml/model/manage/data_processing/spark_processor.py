@@ -1,7 +1,7 @@
-from .base_processor import BaseProcessor
+from model.expose.base_processor import Processor
 
 
-class SparkProcessor(BaseProcessor):
+class SparkProcessor(Processor):
     def preprocess_features(self, features):
         # TODO: if works, delete the processor.
         #   from the archit. side, incoming data format shouldn't touch model level

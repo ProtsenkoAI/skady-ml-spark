@@ -22,8 +22,10 @@ class StreamingTrainerImpl(StreamingTrainer):
 
     def _create_new_model_if_needed(self):
         if not self.saver.check_saved():
+            # TODO: investigate: is it ok to use creator in the implementation part???
             manager = self.manager_creator.get()
-            packaged = PackagedModel(manager, self.weights_updater, self.loader_builder)
+            manager.save()
+            packaged = PackagedModel(self.weights_updater, self.loader_builder)
             self.saver.save_packaged_model(packaged)
             print("saved packaged")
 

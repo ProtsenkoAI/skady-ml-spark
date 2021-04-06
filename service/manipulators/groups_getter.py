@@ -15,7 +15,7 @@ class GroupsGetter:
         vk_id = helpers.get_user_id(self.session, vk_link)
         user_retriever = vk_retrievers.ObjectRetriever(self.session, vk_id)
         try:
-            return user_retriever.get(self.groups_obtainer)
+            return user_retriever.get_train_obj_saver(self.groups_obtainer)
         except VkRequestException:
             return None
 

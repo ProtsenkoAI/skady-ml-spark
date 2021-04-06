@@ -1,5 +1,5 @@
 from typing import Optional, Callable
-from pyspark.sql import DataFrame
+from pyspark.sql import Row, DataFrame
 from ...expose.streaming_data_manager import StreamingDataManager
 import time
 
@@ -7,6 +7,7 @@ import time
 class SparkStreamingDataManager(StreamingDataManager):
     def __init__(self, stream: DataFrame):
         self.stream = stream.writeStream.outputMode("append")
+
         self.queries = []
 
     def stop_queries(self):
@@ -38,9 +39,9 @@ class SparkStreamingDataManager(StreamingDataManager):
         if kwargs is None:
             kwargs = {}
 
-        def apply_to_row(row_raw: DataFrame, row_idx):
-            row = row_raw.toPandas()
-            obj_to_apply(row, **kwargs)
+        def apply_to_row(row_raw: Row):
+            row_dct = row_raw.asDict()
+            obj_to_apply(row_dct, **kwargs)
 
-        query = self.stream.foreachBatch(apply_to_row).start()
+        query = self.stream.foreach(apply_to_row).start()
         self.queries.append(query)

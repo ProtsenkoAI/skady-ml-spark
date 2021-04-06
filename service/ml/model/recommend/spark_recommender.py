@@ -1,26 +1,31 @@
 # TODO: at the moment can recommend deleted users, need to prevent it somehow (maybe in filtering)
 
+from ..expose import ManagerSaver
 from business_rules.expose import RecommendsPostprocessor
 from .local_recommender import LocalRecommender
 from ..expose.recommender import Recommender
 from data import StreamingDataManager
-from .. import Saver
 from typing import List
 import pandas as pd
 import uuid
 import os
 import time
+from typing import Type
+from ..expose import ModelManager
 
 
 class SparkRecommender(Recommender):
     # TODO: maybe should move recommends_postprocessor to spark side?
+    # TODO: move function that's sent to spark to analogue of fitobj for trainer
     def __init__(self, inp_data_manager: StreamingDataManager,
-                 saver: Saver, users_items_loader_builder,
+                 model_manager_class: Type[ModelManager], model_manager_saver: ManagerSaver,
+                 users_items_loader_builder,
                  recommends_postprocessor: RecommendsPostprocessor,
-                 recommend_input_path, recommend_out_path, recommend_time_limit=100):
+                 recommend_input_path, recommend_out_path, recommend_time_limit=10):
         self.loader_builder = users_items_loader_builder
         self.inp_data_manager = inp_data_manager
-        self.saver = saver
+        self.model_manager_class = model_manager_class
+        self.manager_saver = model_manager_saver
         self.recommends_postprocessor = recommends_postprocessor
         self._started = False
         self.recommend_time_limit = recommend_time_limit
@@ -37,18 +42,23 @@ class SparkRecommender(Recommender):
         return postprocessed_recommends
 
     def _start_spark(self):
-        self.inp_data_manager.apply_to_each_row(self._get_recommends_push_results)
+        self.inp_data_manager.apply_to_each_row(
+            self._get_recommends_push_results, kwargs={"model_manager_class": self.model_manager_class,
+                                                       "manager_saver": self.manager_saver,
+                                                       "loader_builder": self.loader_builder,
+                                                       "recommend_out_path": self.recommend_out_path}) # TODO: maybe should serialize it
+        self._started = True
 
-    def _get_recommends_push_results(self, batch: pd.DataFrame):
-        user = batch.values[0][0]  # TODO: refactor getting user from dataframe
-        packaged_model = self.saver.load_packaged_model()
-        print("available items in model in recommends", packaged_model.manager.processor.get_all_items())
-        local_recommender = LocalRecommender(self.loader_builder, model_manager=packaged_model.manager)
+    @staticmethod
+    def _get_recommends_push_results(row: dict, model_manager_class, manager_saver, loader_builder, recommend_out_path):
+        user = row["user_actor_id"]  # TODO: refactor getting user from dataframe
+        manager = model_manager_class.load(manager_saver)
+        print("available items in model in recommends", manager.processor.get_all_items())
+        local_recommender = LocalRecommender(loader_builder, model_manager=manager)
         recommends = local_recommender.get_recommends(user)
-        self._push_recommends(user, recommends)
 
-    def _push_recommends(self, user: List[int], recommends):
-        file_path = os.path.join(self.recommend_out_path, f"{user}.txt")
+        # pushing recommends
+        file_path = os.path.join(recommend_out_path, f"{user}.txt")
         if os.path.isfile(file_path):
             raise ValueError("recommends for this user already exist")
         with open(file_path, "w") as f:
@@ -70,6 +80,8 @@ class SparkRecommender(Recommender):
                 break
             else:
                 time.sleep(0.05)
+        else:
+            raise TimeoutError(f"recommends for user {user} weren't made in {self.recommend_time_limit} seconds")
 
     def _take_recommend(self, user) -> List:
         file_path = os.path.join(self.recommend_out_path, f"{user}.txt")

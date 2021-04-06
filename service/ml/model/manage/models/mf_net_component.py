@@ -38,13 +38,13 @@ class MFNetComponent(BaseNetComponent):
         item_layers = [self.item_factors, self.item_biases]
         self._concat_new_weights_to_params(item_layers, nitems)
 
-    def delete_users(self, *users_idxs):
+    def delete_users(self, users_idxs):
         user_layers = [self.user_factors, self.user_biases]
         for user in users_idxs:
             self._remove_layer_slice_by_idx(user_layers, user)
         self.nusers -= len(users_idxs)
 
-    def delete_items(self, *items_idxs):
+    def delete_items(self, items_idxs):
         item_layers = [self.item_factors, self.item_biases]
         for item in items_idxs:
             print("remove from model using index:", item)

@@ -2,6 +2,7 @@ from business_rules.creators import RecommendsPostprocessorCreator
 from model.recommend.local_recommender import LocalRecommender
 from model.recommend.spark_recommender import SparkRecommender
 from model.expose.recommender import Recommender
+from model.expose import ModelManager
 from data import ObtainerCreator
 from model.creators.saver_creator import SaverCreator
 from data.building_loaders import UserItemsLoaderBuilder  # TODO: make creator for loader builder (now violates layering)
@@ -24,11 +25,10 @@ class RecommenderCreator:
             return LocalRecommender(load_builder)
         elif self.mode == "spark":
             worker_dir = os.path.join(self.paths_info["base_path"], self.paths_info["worker_dir"])
-            model_path = os.path.join(worker_dir, self.paths_info["model_checkpoint_name"])
             recommend_out_path = os.path.join(worker_dir, self.params["recommend_output_dir_name"])
             recommend_input_path = os.path.join(worker_dir, self.params["recommend_input_dir_name"])
 
-            spark_saver = SaverCreator(self.config, self.common_params).get()
+            model_manager_saver = SaverCreator(self.config, self.common_params).get_manager_saver()
 
             os.makedirs(recommend_input_path, exist_ok=True)
             os.makedirs(recommend_out_path, exist_ok=True)
@@ -38,5 +38,5 @@ class RecommenderCreator:
             data_manager = obtainer.get_data()
             recomm_postproc = RecommendsPostprocessorCreator(self.config, self.common_params).get()
 
-            return SparkRecommender(data_manager, spark_saver, load_builder, recomm_postproc,
+            return SparkRecommender(data_manager, ModelManager, model_manager_saver, load_builder, recomm_postproc,
                                     recommend_input_path, recommend_out_path)

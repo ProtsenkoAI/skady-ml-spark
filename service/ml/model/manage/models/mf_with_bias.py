@@ -25,7 +25,7 @@ class MFWithBiasModel(RecsysTorchModel):
         self.mf_comp.add_items(nb_items)
 
     def delete_users(self, users_idxs: List[int]):
-        self.mf_comp.delete_users(*users_idxs)
+        self.mf_comp.delete_users(users_idxs)
 
     def delete_items(self, items_idxs: List[int]):
-        self.mf_comp.delete_items(*items_idxs)
+        self.mf_comp.delete_items(items_idxs)

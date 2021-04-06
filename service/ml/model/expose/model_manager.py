@@ -4,9 +4,11 @@ from .recsys_torch_model import RecsysTorchModel
 
 class ModelManager:
     # TODO: refactor savers so can use manager_saver.save() and not to expose attributes like processor
-    def __init__(self, model: RecsysTorchModel, processor):
+    # TODO: add typing to the manager_saver (deleted due to recursive imports problem at the evening)
+    def __init__(self, model: RecsysTorchModel, processor, manager_saver):
         self.model = model
         self.processor = processor
+        self.manager_saver = manager_saver
 
     def preproc_forward(self, features, labels=None):
         proc_features = self.processor.preprocess_features(features)
@@ -56,3 +58,14 @@ class ModelManager:
     def _add_user_to_processor(self, user_id):
         self.processor.add_user(user_id)
         self.processor.add_item(user_id)
+
+    @classmethod
+    def load(cls, manager_saver):
+        # TODO: refactor architecture of this part later, now it's at least localized in the manager
+        model, processor = manager_saver.load()
+        model.run_after_saving()
+        return cls(model, processor, manager_saver)
+
+    def save(self):
+        self.model.prepare_to_save()
+        self.manager_saver.save(self.model, self.processor)

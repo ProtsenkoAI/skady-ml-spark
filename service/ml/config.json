@@ -6,7 +6,10 @@
     "paths": {
       "base_path": "/home/gldsn/Projects/skady-ml",
       "worker_dir": "worker_dir",
-      "model_checkpoint_name": "model.dill"
+      "vk_obtainer_tasks_dir": "vk_obtainer_tasks",
+      "model_checkpoint_name": "model.dill",
+      "packaged_train_obj_name": "train_obj.dill",
+      "embeddings_file":  "embeddings.db"
     }
   },
   "saver_params": {
@@ -25,6 +28,7 @@
     "recommend_output_dir_name": "recommend_output"
   },
   "model_manager_params": {
+    "use_vk": false,
     "nusers": 0,
     "hidden_size": 20,
     "device": "cpu"
@@ -32,7 +36,6 @@
   "obtainer_params": {
     "fit_stream": {"type":  "csv", "relative_path": "data/mock_incoming_interacts"},
     "min_num_inters_to_fit":  10,
-    "use_vk":  false,
     "interacts_columns_names": ["user_actor_id", "user_proposed_id", "label"]
   }
 }

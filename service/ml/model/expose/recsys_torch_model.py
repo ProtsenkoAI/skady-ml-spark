@@ -27,3 +27,10 @@ class RecsysTorchModel(ABC, nn.Module):
     @abstractmethod
     def delete_items(self, items_idxs: List[int]):
         ...
+
+    def prepare_to_save(self):
+        ...
+
+    def run_after_saving(self):
+        ...
+

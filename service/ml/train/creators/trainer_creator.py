@@ -7,6 +7,7 @@ from train.trainers.fit_objs import SparkFitObj
 from ..updating_weights.weights_updater_impl import WeightsUpdaterImpl
 from data.building_loaders import StandardLoaderBuilder
 from model.creators import ManagerCreator
+from model.expose import ModelManager
 
 
 class TrainerCreator:
@@ -37,9 +38,11 @@ class TrainerCreator:
 
     def get_streaming(self) -> StreamingTrainer:
         if self.mode == "spark":
-            saver = SaverCreator(self.config, self.common_params).get()
+            saver_creator = SaverCreator(self.config, self.common_params)
+            saver = saver_creator.get_train_obj_saver()
+            manager_saver = saver_creator.get_manager_saver()
             users_manager = UsersManagerCreator(self.config, self.common_params).get()
-            fit_obj = SparkFitObj(users_manager, saver)
+            fit_obj = SparkFitObj(users_manager, saver, ModelManager, manager_saver)
 
         weights_updater = WeightsUpdaterImpl(self.trainer_params["lr"])
         loader_builder = StandardLoaderBuilder(self.trainer_params["batch_size"])

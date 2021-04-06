@@ -32,10 +32,5 @@ class CsvDirGenerator:
     def _push(self, samples: Samples):
         # random_file_name = os.path.join(self.dir_path, f"{self.nfiles}.txt")
         random_file_name = os.path.join(self.dir_path, f"{self.nfiles}.csv")
-        # with open(random_file_name, "w") as f:
-            # samples_with_newlines = "\n".join(samples)
-            # samples_with_newlines = "bebebe\nsbababa"
-            # f.write(samples_with_newlines)
-        print("dumping", os.path.isdir(os.path.dirname(random_file_name)))
         samples.to_csv(random_file_name, index=False, header=False)
         self.nfiles += 1
